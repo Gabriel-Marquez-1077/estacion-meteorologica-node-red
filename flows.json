@@ -9113,7 +9113,17 @@
         "z": "cf3d3e629b327c6f",
         "name": "Prueba",
         "info": "Hola, prueba",
-        "x": 310,
+        "x": 90,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "b21553ad0d608287",
+        "type": "comment",
+        "z": "cf3d3e629b327c6f",
+        "name": "Prueba 2",
+        "info": "Hola, haciendo commit desde la ventana de comandos de la Rpi",
+        "x": 240,
         "y": 160,
         "wires": []
     },
