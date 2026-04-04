@@ -9108,6 +9108,16 @@
         ]
     },
     {
+        "id": "fc15b75392325f45",
+        "type": "comment",
+        "z": "cf3d3e629b327c6f",
+        "name": "Prueba",
+        "info": "Holaaa",
+        "x": 310,
+        "y": 160,
+        "wires": []
+    },
+    {
         "id": "acaafdb79c5a693d",
         "type": "ui-template",
         "z": "b0d7787666ab6666",
