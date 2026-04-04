@@ -9112,7 +9112,7 @@
         "type": "comment",
         "z": "cf3d3e629b327c6f",
         "name": "Prueba",
-        "info": "Holaaa",
+        "info": "Hola, prueba",
         "x": 310,
         "y": 160,
         "wires": []
