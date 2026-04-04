@@ -1329,7 +1329,7 @@
         "type": "debug",
         "z": "61dd6fcac9de88c9",
         "name": "Datos nuevos",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
