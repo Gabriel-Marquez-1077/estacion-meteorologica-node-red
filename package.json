@@ -1,0 +1,12 @@
+{
+    "name": "estacion-meteorologica-node-red",
+    "description": "Sistema de adquisición y visualización de datos basado en Node-red, para una estación meteorológica Vantage.",
+    "version": "0.0.1",
+    "dependencies": {},
+    "node-red": {
+        "settings": {
+            "flowFile": "flows.json",
+            "credentialsFile": "flows_cred.json"
+        }
+    }
+}
