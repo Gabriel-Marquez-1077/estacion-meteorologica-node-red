@@ -590,8 +590,8 @@
         ],
         "order": 1,
         "className": "",
-        "visible": "true",
-        "disabled": "false"
+        "visible": true,
+        "disabled": false
     },
     {
         "id": "ca07a8fad7827a1c",
@@ -1035,7 +1035,7 @@
         "width": "5",
         "height": 1,
         "order": 7,
-        "showTitle": true,
+        "showTitle": false,
         "className": "",
         "visible": "true",
         "disabled": "false",
@@ -1268,8 +1268,8 @@
         "links": [
             "9feb3fb487bc0b40"
         ],
-        "x": 675,
-        "y": 960,
+        "x": 995,
+        "y": 1060,
         "wires": [
             [
                 "1ef5cbc39a7f6f58"
@@ -1290,7 +1290,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 460,
-        "y": 1080,
+        "y": 1160,
         "wires": []
     },
     {
@@ -1298,7 +1298,7 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Mapeo gráfico",
-        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.periodo,\n        \"Presion_barometrica\": item.pressure.toFixed(2),\n        \"Temperatura\": item.outTemp.toFixed(2),\n        \"Índice de calor\": item.heatindex.toFixed(2),\n        \"Sensación térmica\": item.windchill.toFixed(2),\n        \"Punto de rocío\": item.dewpoint.toFixed(2),\n    };\n});\n\nreturn msg;",
+        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.periodo,\n        \"Temperatura\": item.outTemp.toFixed(2),\n        \"Temperatura aparente\": item.appTemp.toFixed(2),\n        \"Índice de calor\": item.heatindex.toFixed(2),\n        \"Punto de rocío\": item.dewpoint.toFixed(2),\n    };\n});\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1306,7 +1306,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 1040,
+        "y": 1120,
         "wires": [
             [
                 "a0d05dd94fd91ea6",
@@ -1321,7 +1321,7 @@
         "name": "Grupo Temperatura",
         "info": "",
         "x": 150,
-        "y": 920,
+        "y": 1000,
         "wires": []
     },
     {
@@ -1329,7 +1329,7 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Mapeo template",
-        "func": "// Convertimos la fecha a un formato funcional\n//let fecha = new Date(msg.payload[0].dateTime*1000);\n\nlet fecha = new Date(msg.payload[0].dateTime * 1000).toLocaleString();\n\nmsg.payload = msg.payload.map(item => {\n    return {\n        \"fecha\": fecha,\n        // Renombramos los atributos de temperatura\n        \"Temperatura\": item.outTemp,\n        \"Indice de calor\": item.heatindex,\n        \"Sensacion termica\": item.windchill,\n        \"Punto de rocío\": item.dewpoint,\n    };\n});\n\n\n\nreturn msg;",
+        "func": "// Convertimos la fecha a un formato funcional\n//let fecha = new Date(msg.payload[0].dateTime*1000);\n\nlet fecha = new Date(msg.payload[0].dateTime * 1000).toLocaleString();\n\nmsg.payload = msg.payload.map(item => {\n    return {\n        \"fecha\": fecha,\n        // Renombramos los atributos de temperatura\n        \"Temperatura\": item.outTemp,\n        \"Temperatura aparente\": item.appTemp,\n        \"Índice de calor\": item.heatindex,\n        \"Punto de rocío\": item.dewpoint,\n    };\n});\n\n\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1337,7 +1337,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 1000,
+        "y": 1080,
         "wires": [
             [
                 "e972a402face8046",
@@ -1349,7 +1349,7 @@
         "id": "b32e8421ad237312",
         "type": "debug",
         "z": "61dd6fcac9de88c9",
-        "name": "Gráfico template",
+        "name": "Mapeo",
         "active": false,
         "tosidebar": true,
         "console": false,
@@ -1358,8 +1358,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 460,
-        "y": 1000,
+        "x": 430,
+        "y": 1080,
         "wires": []
     },
     {
@@ -1368,8 +1368,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Grupo Humedad",
         "info": "",
-        "x": 740,
-        "y": 920,
+        "x": 1060,
+        "y": 1020,
         "wires": []
     },
     {
@@ -1384,12 +1384,11 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 770,
-        "y": 960,
+        "x": 1090,
+        "y": 1060,
         "wires": [
             [
                 "b39eceb91f66171d",
-                "13cee4c13cf449ca",
                 "f8d62555e093f02e"
             ]
         ]
@@ -1401,7 +1400,7 @@
         "name": "Título",
         "info": "",
         "x": 110,
-        "y": 580,
+        "y": 620,
         "wires": []
     },
     {
@@ -1413,7 +1412,7 @@
             "9feb3fb487bc0b40"
         ],
         "x": 75,
-        "y": 1000,
+        "y": 1080,
         "wires": [
             [
                 "17988ff7ab154dbb"
@@ -1429,7 +1428,7 @@
             "ae4510cd057c03bc"
         ],
         "x": 75,
-        "y": 620,
+        "y": 660,
         "wires": [
             [
                 "3d71418379764d3a"
@@ -1442,8 +1441,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Grupo Viento",
         "info": "",
-        "x": 730,
-        "y": 1180,
+        "x": 1050,
+        "y": 1300,
         "wires": []
     },
     {
@@ -1454,8 +1453,8 @@
         "links": [
             "9feb3fb487bc0b40"
         ],
-        "x": 675,
-        "y": 1220,
+        "x": 995,
+        "y": 1340,
         "wires": [
             [
                 "ec20d0f936634f3b"
@@ -1468,8 +1467,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Back-up codigo bueno",
         "info": "<template>\n    <div ref=\"chart\" style=\"width: 90%; height: 200px;\"></div>\n</template>\n\n<script>\n    export default {\n    data() { return { chart: null } },\n    mounted() {\n        // Carga mínima de librería\n        const s = document.createElement('script');\n        s.src = \"https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js\";\n        s.onload = () => {\n            this.chart = window.echarts.init(this.$refs.chart);\n            this.chart.setOption({\n                // TÍTULO\n                /*title: {\n                    text: 'Dirección del viento actual',\n                    left: 'center',\n                    textStyle: {\n                        color: '#FFFFFF',\n                        fontSize: 16,\n                        fontFamily: 'Arial',\n                        fontWeight: 'bold'\n                    }\n                },*/\n                \n                // CONFIGURACIÓN DE LA BRÚJULA (Gauge)\n                series: [{\n                    type: 'gauge',\n                    // Ajustamos los ángulos para que 0 sea el Norte (arriba)\n                    startAngle: 90, \n                    endAngle: -270, \n                    min: 0,\n                    max: 360,\n                    splitNumber: 8, // 360 / 8 = 45 grados para cada punto cardinal\n                    radius: '100%', // Tamaño de la brújula\n                    \n                    // Línea exterior del círculo\n                    axisLine: {\n                        lineStyle: { width: 4, color: [[1, '#414f62']] }\n                    },\n                    // Marcas principales (líneas de los puntos cardinales)\n                    splitLine: {\n                        distance: -1,\n                        length: 15,\n                        lineStyle: { color: '#414f62', width: 2 }\n                    },\n                    // Ocultamos las marcas pequeñas para un diseño más limpio\n                    axisTick: {\n                        show: 'show', \n                        length: 6,\n                        distance: 5,\n                        lineStyle: { color: '#414f62', width: 1 }\n                    },\n                    \n                    // Etiquetas de texto (N, NE, E, etc.)\n                    axisLabel: {\n                        distance: 8,\n                        color: '#FFFFFF',\n                        fontSize: 10,\n                        formatter: function (value) {\n                            if (value === 0 || value === 360) return 'N';\n                            if (value === 45) return 'NE';\n                            if (value === 90) return 'E';\n                            if (value === 135) return 'SE';\n                            if (value === 180) return 'S';\n                            if (value === 225) return 'SW';\n                            if (value === 270) return 'W';\n                            if (value === 315) return 'NW';\n                            return '';\n                        }\n                    },\n                    \n                    // Diseño del indicador (La flecha azul)\n                    pointer: {\n                        icon: 'arrow',\n                        offsetCenter: [0, '-40%'] ,\n                        width: 20,\n                        length: '40%'\n                    },\n                    itemStyle: {\n                        color: '#2F6BCC' // Azul que estabas usando\n                    },\n                    \n                    // Texto en el centro que muestra los grados exactos\n                    detail: {\n                        valueAnimation: true,\n                        formatter: '{value}m/s',\n                        color: '#FFFFFF',\n                        fontSize: 16,\n                        offsetCenter: ['2%', 0] // Lo ubicamos abajo del centro\n                    },\n                    \n                    // Valor inicial al cargar\n                    data: [{ value: 0 }]\n                }]\n            });\n        };\n        document.head.appendChild(s);\n    },\n    \n    // DETECCIÓN DE CAMBIOS EN EL PAYLOAD\n    watch: {\n        msg: function(m) {\n            // Buscamos específicamente windDir dentro del payload\n            if (this.chart && m.payload && m.payload[0] && m.payload[0].windSpeed !== undefined) {\n                \n                // Extraemos el valor y le quitamos los decimales para que sea un grado exacto\n                //let velocidadActual = Math.round(m.payload[0].windSpeed);\n                let velocidadActual = m.payload[0].windSpeed.toFixed(2);\n                \n                // Actualizamos el gráfico\n                this.chart.setOption({\n                    series: [{\n                        data: [{ value: velocidadActual }]\n                    }]\n                });\n            }\n        }\n    }\n}\n</script>",
-        "x": 760,
-        "y": 1260,
+        "x": 1080,
+        "y": 1380,
         "wires": []
     },
     {
@@ -1479,7 +1478,7 @@
         "name": "Grupo Presión",
         "info": "",
         "x": 130,
-        "y": 1180,
+        "y": 1300,
         "wires": []
     },
     {
@@ -1491,7 +1490,7 @@
             "a030b8a9870dba25"
         ],
         "x": 75,
-        "y": 1220,
+        "y": 1340,
         "wires": [
             [
                 "1e1c368b4f61fdbc"
@@ -1504,8 +1503,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Grupo Radiación",
         "info": "",
-        "x": 1220,
-        "y": 920,
+        "x": 1760,
+        "y": 1020,
         "wires": []
     },
     {
@@ -1515,7 +1514,7 @@
         "name": "Grupo Lluvia",
         "info": "<template>\n    <div class=\"contenedor-spacer\">\n        <div class=\"caja-lluvia\">\n        </div>\n    </div>\n</template>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-spacer {\n        height: 10px;\n        width: 10px;\n        display: flex;\n        \n        border: 1px solid;\n    }\n</style>",
         "x": 130,
-        "y": 1380,
+        "y": 1560,
         "wires": []
     },
     {
@@ -1524,8 +1523,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Grupo Fase Lunar",
         "info": "",
-        "x": 750,
-        "y": 1380,
+        "x": 1070,
+        "y": 1560,
         "wires": []
     },
     {
@@ -1533,7 +1532,7 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Mapeo",
-        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.periodo,\n        \"Presion_barometrica\": item.pressure.toFixed(2),\n    };\n});\n\nreturn msg;",
+        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.periodo,\n        \"Barométrica\": item.barometer.toFixed(2),\n    };\n});\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1541,11 +1540,11 @@
         "finalize": "",
         "libs": [],
         "x": 170,
-        "y": 1220,
+        "y": 1340,
         "wires": [
             [
-                "e9c2a54fa30c9f94",
-                "9d360cf0fd47ff4e"
+                "9d360cf0fd47ff4e",
+                "8a976270d0d227eb"
             ]
         ]
     },
@@ -1562,8 +1561,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 320,
-        "y": 1260,
+        "x": 540,
+        "y": 1420,
         "wires": []
     },
     {
@@ -1575,10 +1574,12 @@
             "4c75413e2e2c9cd6"
         ],
         "x": 75,
-        "y": 1420,
+        "y": 1640,
         "wires": [
             [
-                "b9361c90f814fa34"
+                "b9361c90f814fa34",
+                "466dd05accd25c02",
+                "6797604751110a69"
             ]
         ]
     },
@@ -1595,8 +1596,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 490,
-        "y": 1420,
+        "x": 530,
+        "y": 1680,
         "wires": []
     },
     {
@@ -1612,16 +1613,16 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 620,
+        "y": 660,
         "wires": [
             [
                 "d2137c39c08e3cb9",
-                "4c7fb26ee27746b6",
                 "abce5cdb73e0efbb",
                 "d5d6107c4f1c51be",
                 "e2a0f37af834d03a",
                 "01dc941a7d275043",
-                "dd3c30e7b2cccb65"
+                "dd3c30e7b2cccb65",
+                "b70285fe5b58c043"
             ]
         ]
     },
@@ -1639,7 +1640,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 420,
-        "y": 860,
+        "y": 900,
         "wires": []
     },
     {
@@ -1649,7 +1650,7 @@
         "name": "Extraer fecha y hora",
         "info": "let fecha = new Date(item.dateTime * 1000);\n\nlet año = fecha.getFullYear();\nlet mes = fecha.getMonth() + 1;  // empieza en 0\nlet dia = fecha.getDate();\n\nlet hora = fecha.getHours();\nlet minutos = fecha.getMinutes();\nlet segundos = fecha.getSeconds();",
         "x": 150,
-        "y": 720,
+        "y": 760,
         "wires": []
     },
     {
@@ -1685,7 +1686,7 @@
         "repair": true,
         "outputs": 4,
         "x": 570,
-        "y": 380,
+        "y": 360,
         "wires": [
             [
                 "9feb3fb487bc0b40"
@@ -1706,7 +1707,7 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Consulta múltiple DB",
-        "func": "// Consulta múltiple a la DB\n// msg1: Consulta datos actuales\n// msg2: Valores máximos\n// msg3: Consulta lluvia acumulada día y mes\n// msg4: Presión, temp, heatindex, windchill, dewpoint últimas 24h\n\nlet msg1 = { \n\n    etiqueta: \"msg1\",\n    topic: \"SELECT * FROM archive ORDER BY dateTime DESC LIMIT 1\" };\n\nlet msg2 = { // Consultas múltiples\n\n    etiqueta: \"msg2\",\n    topic: `SELECT\n\n            -- Amanecer y anochecer (pendiente)\n            (SELECT dateTime\n            FROM archive \n            ORDER BY dateTime DESC \n            LIMIT 2) AS fecha,\n\n            -- Última lluvia detectada\n            (SELECT dateTime\n            FROM archive\n            WHERE rain > 0\n            ORDER BY dateTime DESC\n            LIMIT 1) AS ultimaLluvia,\n\n            -- Temperatura máxima 24h\n            (SELECT MAX(outTemp)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS tempMax,\n            \n            -- Humedad máxima 24h\n            (SELECT MAX(outHumidity)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS humMax,\n            \n            -- Radiación UV máxima 24h (pendiente)\n            (SELECT MAX(UV)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS uvMax;      \n            `};\n\nlet msg3 = {\n\n    etiqueta: \"msg3\", \n    topic: `SELECT 'Día' AS Periodo,\n            IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= (strftime('%s', 'now') - 86400)\n                \n            UNION ALL\n                \n            SELECT 'Mes' AS Periodo, \n            IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= (strftime('%s', 'now', 'start of month'));\n            `};\n\nlet msg4 = {\n\n    etiqueta: \"msg4\", \n    topic:  `SELECT \n                datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                pressure,\n                outTemp,\n                heatindex,\n                windchill,\n                dewpoint\n            FROM archive\n            WHERE dateTime >= (strftime('%s', 'now') - 86400)\n            ORDER BY dateTime ASC;\n            `};\n\nreturn [[msg1, msg2, msg3, msg4]]; \n// Al ponerlos dentro de un array doble, Node-RED envía los dos mensajes uno tras otro",
+        "func": "// Consulta múltiple a la DB\n// msg1: Consulta datos actuales\n// msg2: Valores máximos\n// msg3: Consulta lluvia acumulada últimas 2h, día, semana y mes\n// msg4: barometer, temp, heatindex, windchill, dewpoint últimas 24h\n\nlet msg1 = { \n\n    etiqueta: \"msg1\",\n    topic: \"SELECT * FROM archive ORDER BY dateTime DESC LIMIT 1\" };\n\nlet msg2 = { // Consultas múltiples\n\n    etiqueta: \"msg2\",\n    topic: `SELECT\n\n            -- Fecha actual\n            (SELECT dateTime\n            FROM archive\n            ORDER BY dateTime DESC\n            LIMIT 1) AS fecha,\n\n            -- Última lluvia detectada\n            (SELECT dateTime\n            FROM archive\n            WHERE rain > 0\n            ORDER BY dateTime DESC\n            LIMIT 1) AS ultimaLluvia,\n\n            -- Temperatura máxima 24h\n            (SELECT MAX(outTemp)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS tempMax,\n            \n            -- Humedad máxima 24h\n            (SELECT MAX(outHumidity)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS humMax,\n            \n            -- Radiación UV máxima 24h (pendiente)\n            (SELECT MAX(UV)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS uvMax;      \n            `};\n\nlet msg3 = {\n\n    etiqueta: \"msg3\", \n    topic: `SELECT 'Tasa_actual' AS Periodo,\n                IFNULL(rainRate, 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime = (SELECT MAX(dateTime) FROM archive)\n\n            UNION ALL\n\n            SELECT 'ultimas_dos_h' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', '-2 hours')\n\n            UNION ALL\n            \n            SELECT 'Día' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '+5 hours')\n\n            UNION ALL\n\n            SELECT 'Semana' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '+5 hours', '-7 days')\n\n            UNION ALL\n\n            SELECT 'Mes' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of month', '+5 hours');\n            `}; // Se suman 5 horas debido a que el comando 'start of ...' hace el calculo con UTC-0 y luego se pasa a hora local dando 5 horas menos de las que son\n\nlet msg4 = {\n\n    etiqueta: \"msg4\", \n    topic:  `SELECT \n                datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                barometer,\n                outTemp,\n                appTemp,\n                heatindex,\n                dewpoint\n            FROM archive\n            WHERE dateTime >= (strftime('%s', 'now') - 86400)\n            ORDER BY dateTime ASC;\n            `};\n\nreturn [[msg1, msg2, msg3, msg4]]; \n// Al ponerlos dentro de un array doble, Node-RED envía los dos mensajes uno tras otro",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1714,7 +1715,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 380,
+        "y": 360,
         "wires": [
             [
                 "eb23e56cce4d4db9"
@@ -1743,7 +1744,7 @@
             "07fe6afcac032256"
         ],
         "x": 75,
-        "y": 380,
+        "y": 360,
         "wires": [
             [
                 "73d2eb09862a9e24"
@@ -1764,7 +1765,7 @@
             "531ad76eefaeb027"
         ],
         "x": 675,
-        "y": 320,
+        "y": 300,
         "wires": []
     },
     {
@@ -1777,7 +1778,7 @@
             "ea46fe9c6eda839e"
         ],
         "x": 675,
-        "y": 360,
+        "y": 340,
         "wires": []
     },
     {
@@ -1790,7 +1791,7 @@
             "af14ea9841dde090"
         ],
         "x": 675,
-        "y": 400,
+        "y": 380,
         "wires": []
     },
     {
@@ -1804,7 +1805,7 @@
             "77b15b444311696f"
         ],
         "x": 675,
-        "y": 440,
+        "y": 420,
         "wires": []
     },
     {
@@ -1821,7 +1822,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 590,
-        "y": 480,
+        "y": 460,
         "wires": []
     },
     {
@@ -1832,8 +1833,8 @@
         "links": [
             "9feb3fb487bc0b40"
         ],
-        "x": 1155,
-        "y": 960,
+        "x": 1695,
+        "y": 1060,
         "wires": [
             [
                 "a9118087a1e81d3f"
@@ -1845,15 +1846,15 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Mapeo",
-        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.Periodo,\n        \"Lluvia_total\": item.Lluvia_total.toFixed(2),\n    };\n});\n\nreturn msg;",
+        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.Periodo,\n        \"Lluvia_total\": item.Lluvia_total.toFixed(2),\n    };\n}).slice(2, 3);\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 170,
-        "y": 1420,
+        "x": 190,
+        "y": 1680,
         "wires": [
             [
                 "12ca10459fc0c1ab"
@@ -1873,8 +1874,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 990,
-        "y": 1220,
+        "x": 1310,
+        "y": 1340,
         "wires": []
     },
     {
@@ -1890,8 +1891,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 920,
-        "y": 1040,
+        "x": 1240,
+        "y": 1180,
         "wires": []
     },
     {
@@ -1906,8 +1907,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1250,
-        "y": 960,
+        "x": 1790,
+        "y": 1060,
         "wires": [
             [
                 "0b45f4b66879cd06",
@@ -1928,8 +1929,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1420,
-        "y": 1000,
+        "x": 1960,
+        "y": 1100,
         "wires": []
     },
     {
@@ -1938,8 +1939,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Pronóstico local",
         "info": "",
-        "x": 1220,
-        "y": 1180,
+        "x": 1760,
+        "y": 1300,
         "wires": []
     },
     {
@@ -1954,8 +1955,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1350,
-        "y": 1220,
+        "x": 1890,
+        "y": 1340,
         "wires": [
             [
                 "63dec89e8e245078"
@@ -1973,8 +1974,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 1210,
-        "y": 1220,
+        "x": 1750,
+        "y": 1340,
         "wires": [
             [
                 "7075fe55b665fc69"
@@ -1994,8 +1995,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1730,
-        "y": 1220,
+        "x": 2270,
+        "y": 1340,
         "wires": []
     },
     {
@@ -2024,7 +2025,7 @@
         "sql": "",
         "name": "Database",
         "x": 420,
-        "y": 380,
+        "y": 360,
         "wires": [
             [
                 "87fe76399356a013",
@@ -2053,7 +2054,7 @@
         "value": "payload[0].fecha",
         "valueType": "msg",
         "x": 420,
-        "y": 660,
+        "y": 700,
         "wires": []
     },
     {
@@ -2071,13 +2072,13 @@
         "style": true,
         "font": "Arial,Arial,Helvetica,sans-serif",
         "fontSize": "12",
-        "color": "#c2c2c2",
+        "color": "#dedede",
         "wrapText": false,
         "className": "",
         "value": "payload.sun_rise",
         "valueType": "msg",
-        "x": 770,
-        "y": 660,
+        "x": 830,
+        "y": 700,
         "wires": []
     },
     {
@@ -2095,37 +2096,13 @@
         "style": true,
         "font": "Arial,Arial,Helvetica,sans-serif",
         "fontSize": "12",
-        "color": "#c2c2c2",
+        "color": "#dedede",
         "wrapText": false,
         "className": "",
         "value": "payload.sun_set",
         "valueType": "msg",
-        "x": 770,
-        "y": 700,
-        "wires": []
-    },
-    {
-        "id": "4c7fb26ee27746b6",
-        "type": "ui-text",
-        "z": "61dd6fcac9de88c9",
-        "group": "8b8d286245b63ea6",
-        "order": 4,
-        "width": 3,
-        "height": 2,
-        "name": "Última lluvia registrada",
-        "label": "Última lluvia registrada",
-        "format": "{{msg.payload}}",
-        "layout": "col-center",
-        "style": true,
-        "font": "Arial,Arial,Helvetica,sans-serif",
-        "fontSize": "14",
-        "color": "#d6d6d6",
-        "wrapText": true,
-        "className": "",
-        "value": "payload[0][\"Ultima lluvia detectada\"]",
-        "valueType": "msg",
-        "x": 440,
-        "y": 700,
+        "x": 830,
+        "y": 740,
         "wires": []
     },
     {
@@ -2133,7 +2110,7 @@
         "type": "ui-text",
         "z": "61dd6fcac9de88c9",
         "group": "8b8d286245b63ea6",
-        "order": 5,
+        "order": 4,
         "width": 3,
         "height": "2",
         "name": "Temperatura máxima",
@@ -2143,13 +2120,13 @@
         "style": true,
         "font": "Arial,Arial,Helvetica,sans-serif",
         "fontSize": "14",
-        "color": "#d6d6d6",
+        "color": "#dedede",
         "wrapText": true,
         "className": "",
         "value": "payload[0][\"tempMax\"]",
         "valueType": "msg",
         "x": 440,
-        "y": 780,
+        "y": 820,
         "wires": []
     },
     {
@@ -2157,7 +2134,7 @@
         "type": "ui-text",
         "z": "61dd6fcac9de88c9",
         "group": "8b8d286245b63ea6",
-        "order": 6,
+        "order": 5,
         "width": 3,
         "height": "2",
         "name": "Humedad máxima",
@@ -2167,13 +2144,13 @@
         "style": true,
         "font": "Arial,Arial,Helvetica,sans-serif",
         "fontSize": "14",
-        "color": "#d6d6d6",
+        "color": "#dedede",
         "wrapText": false,
         "className": "",
         "value": "payload[0][\"humMax\"]",
         "valueType": "msg",
         "x": 430,
-        "y": 820,
+        "y": 860,
         "wires": []
     },
     {
@@ -2185,8 +2162,8 @@
         "label": "",
         "order": 2,
         "chartType": "line",
-        "category": "Presión",
-        "categoryType": "str",
+        "category": "[\"Barométrica\"]",
+        "categoryType": "json",
         "xAxisLabel": "Hora",
         "xAxisProperty": "Periodo",
         "xAxisPropertyType": "property",
@@ -2195,7 +2172,7 @@
         "xAxisFormatType": "{HH}:{mm}",
         "xmin": "0",
         "xmax": "100",
-        "yAxisLabel": "Presión",
+        "yAxisLabel": "hPa",
         "yAxisProperty": "Presion_barometrica",
         "yAxisPropertyType": "property",
         "ymin": "",
@@ -2211,7 +2188,7 @@
         "removeOlderPoints": "9999999999999999999999999",
         "colors": [
             "#38ffcd",
-            "#38ffcd",
+            "#38ff59",
             "#38ffcd",
             "#38ffcd",
             "#38ffcd",
@@ -2233,7 +2210,7 @@
         "className": "",
         "interpolation": "linear",
         "x": 360,
-        "y": 1220,
+        "y": 1340,
         "wires": [
             []
         ]
@@ -2243,9 +2220,9 @@
         "type": "ui-chart",
         "z": "61dd6fcac9de88c9",
         "group": "13e1ab6c7e47cd89",
-        "name": "Grafico lluvia",
-        "label": "Lluvia acumulada",
-        "order": 2,
+        "name": "Grafico lluvia 1",
+        "label": "",
+        "order": 4,
         "chartType": "bar",
         "category": "",
         "categoryType": "none",
@@ -2272,11 +2249,11 @@
         "removeOlderUnit": "3600",
         "removeOlderPoints": "",
         "colors": [
+            "#63e9f2",
             "#64bbf2",
-            "#63f274",
-            "#ff4538",
+            "#6393f2",
             "#424fff",
-            "#a347e1",
+            "#64bbf2",
             "#d62728",
             "#ff9896",
             "#9467bd",
@@ -2290,12 +2267,12 @@
             "#414f62"
         ],
         "gridColorDefault": false,
-        "width": "3",
-        "height": "5",
+        "width": "2",
+        "height": "3",
         "className": "",
         "interpolation": "linear",
-        "x": 330,
-        "y": 1420,
+        "x": 380,
+        "y": 1680,
         "wires": [
             [
                 "7144c4e99b347114"
@@ -2350,62 +2327,8 @@
         "styleRounded": true,
         "styleGlow": false,
         "className": "",
-        "x": 950,
-        "y": 960,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "13cee4c13cf449ca",
-        "type": "ui-gauge",
-        "z": "61dd6fcac9de88c9",
-        "name": "Humedad interior",
-        "group": "0336dace9b8ab47c",
-        "order": 2,
-        "value": "payload[0][\"Humedad interior\"]",
-        "valueType": "msg",
-        "width": 4,
-        "height": 3,
-        "gtype": "gauge-half",
-        "gstyle": "rounded",
-        "title": "Humedad interior",
-        "alwaysShowTitle": false,
-        "floatingTitlePosition": "top-left",
-        "units": "%",
-        "icon": "",
-        "prefix": "",
-        "suffix": "",
-        "segments": [
-            {
-                "from": "0",
-                "color": "#a8f5ff",
-                "text": "",
-                "textType": "label"
-            },
-            {
-                "from": "15",
-                "color": "#38b3ff",
-                "text": "",
-                "textType": "label"
-            },
-            {
-                "from": "85",
-                "color": "#3859ff",
-                "text": "",
-                "textType": "label"
-            }
-        ],
-        "min": 0,
-        "max": "100",
-        "sizeThickness": 16,
-        "sizeGap": "5",
-        "sizeKeyThickness": 8,
-        "styleRounded": true,
-        "styleGlow": false,
-        "className": "",
-        "x": 950,
-        "y": 1000,
+        "x": 1270,
+        "y": 1060,
         "wires": [
             []
         ]
@@ -2458,8 +2381,8 @@
         "styleRounded": true,
         "styleGlow": false,
         "className": "",
-        "x": 1400,
-        "y": 960,
+        "x": 1940,
+        "y": 1060,
         "wires": [
             []
         ]
@@ -2476,14 +2399,14 @@
         "width": 7,
         "height": "2",
         "head": "",
-        "format": "<template>\n    <div class=\"contenedor-principal\">\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-azul\">{{ obtenerDato('Temperatura') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Temperatura</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-celeste\">{{ obtenerDato('Indice de calor') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Índice de calor</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-rojo\">{{ obtenerDato('Sensacion termica') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Sensación térmica</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-morado\">{{ obtenerDato('Punto de rocío') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Punto de rocío</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal {\n        display: flex;\n        justify-content: space-around;\n        /* Reparte el espacio por igual */\n        //background-color: #262636;\n        background-color: #1d1d2a;\n        /* Fondo oscuro */\n        //padding: 10px;\n        border-radius: 10px;\n        font-family: Arial, sans-serif;\n        //border: 1px solid;\n    }\n\n    .caja-dato {\n        display: flex;\n        flex-direction: column;\n        justify-content: center; /* centra verticalmente */\n        align-items: center; /* centra horizontalmente */\n        \n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor {\n        font-size: 24px;\n        font-weight: bold;\n        margin-bottom: 5px;\n        //border: 1px solid;\n    }\n\n    .unidad {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .texto-azul {\n        color: #ff4538;\n    }\n\n    .texto-celeste {\n        color: #ffde38;\n    }\n\n    .texto-rojo {\n        color: #ff4538;\n    }\n\n    .texto-morado {\n        color: #424fff;\n    }\n</style>",
+        "format": "<template>\n    <div class=\"contenedor-principal-t\">\n        <div class=\"caja-dato-t\">\n            <div class=\"valor-t color-temperatura\">{{ obtenerDato('Temperatura') }}<span class=\"unidad-t\">°C</span></div>\n            <div class=\"etiqueta-t\">Temperatura</div>\n        </div>\n\n        <div class=\"caja-dato-t\">\n            <div class=\"valor-t color-aparente\">{{ obtenerDato('Temperatura aparente') }}<span class=\"unidad-t\">°C</span></div>\n            <div class=\"etiqueta-t\">Temperatura aparente</div>\n        </div>\n\n        <div class=\"caja-dato-t\">\n            <div class=\"valor-t color-indice\">{{ obtenerDato('Índice de calor') }}<span class=\"unidad-t\">°C</span></div>\n            <div class=\"etiqueta-t\">Índice de calor</div>\n        </div>\n\n        <div class=\"caja-dato-t\">\n            <div class=\"valor-t color-rocio\">{{ obtenerDato('Punto de rocío') }}<span class=\"unidad-t\">°C</span></div>\n            <div class=\"etiqueta-t\">Punto de rocío</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal-t {\n        display: flex;\n        justify-content: space-around;\n        /* Reparte el espacio por igual */\n        //background-color: #262636;\n        background-color: #1d1d2a;\n        /* Fondo oscuro */\n        //padding: 10px;\n        border-radius: 10px;\n        font-family: Arial, sans-serif;\n        //border: 1px solid;\n    }\n\n    .caja-dato-t {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;    /* centra verticalmente */\n        align-items: center;        /* centra horizontalmente */\n        \n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor-t {\n        font-size: 24px;\n        font-weight: bold;\n        margin-bottom: 5px;\n        //border: 1px solid;\n    }\n\n    .unidad-t {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-t {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .color-temperatura {\n        color: #ffe438;\n    }\n\n    .color-aparente {\n        color: #ffa238;\n    }\n\n    .color-indice {\n        color: #ff3838;\n    }\n\n    .color-rocio {\n        color: #8838ff;\n    }\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
         "x": 440,
-        "y": 960,
+        "y": 1040,
         "wires": [
             []
         ]
@@ -2506,8 +2429,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 810,
-        "y": 1220,
+        "x": 1130,
+        "y": 1340,
         "wires": [
             [
                 "0c857c13996a7557"
@@ -2521,19 +2444,19 @@
         "group": "322f5eee06f5827c",
         "page": "",
         "ui": "",
-        "name": "Título",
+        "name": "Título y tendencia presión",
         "order": 1,
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<div class=\"contenedor-titulo\">\n    <div class=\"titulo-principal\">Presión barométrica</div>\n    <div class=\"subtitulo-italic\">Últimas 24h</div>\n</div>\n\n<style>\n    .contenedor-titulo {\n        //padding: 10px 5px;\n        line-height: 1.1;\n        /* Ajusta el espacio entre líneas */\n        font-family: Arial, sans-serif;\n        margin-bottom: 20px;\n    }\n\n    .titulo-principal {\n        color: #FFFFFF;\n        font-size: 1.25rem;\n        //font-weight: bold;\n        margin: 0;\n    }\n\n    .subtitulo-italic {\n        color: #a0a0a0;\n        /* Gris */\n        font-size: 0.9rem;\n        font-style: italic;\n        margin-top: 3px;\n    }\n</style>",
+        "format": "<div class=\"cabecera-presion-p\">\n\n    <div class=\"info-presion-p\">\n        <div class=\"titulo-principal-presion-p\">\n            Presión barométrica\n        </div>\n        \n    </div>\n\n    <div class=\"panel-tendencia-p\">\n        <div class=\"valor-tendencia-p\">\n            <span class=\"icono-tendencia-p\">{{msg.payload.flecha}}</span>\n            {{msg.payload.diferencia}}\n            <span class=\"unidades-tendencia-p\">hPa</span>\n        </div>\n        <div class=\"fila-inferior-p\">\n            <div class=\"texto-tendencia-p\">\n                {{msg.payload.texto}}\n            </div>\n        </div>\n    </div>\n\n</div>\n\n<style>\n    /*<div class=\"contenedor-titulo-presion\">\n        <div class=\"titulo-principal-presion\">Presión barométrica</div>\n        <div class=\"subtitulo-italic-presion\">Últimas 24h</div>\n    </div>*/\n\n    .cabecera-presion-p {\n        display: flex;\n        justify-content: space-between;\n        align-items: flex-start;\n        margin-bottom: 19px;\n        //border: 1px solid;\n    }\n\n    /* ---------- IZQUIERDA ---------- */\n\n    .info-presion-p {\n        font-family: Arial;\n        flex: 1;\n        //line-height: 1.1;\n    }\n    .titulo-principal-presion-p {\n        color: white;\n        font-size: 1.25rem;\n    }\n\n    /* ---------- DERECHA ---------- */\n    \n    .panel-tendencia-p {\n        width: 120px;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        margin-top: 2px;\n        //border: 1px solid;\n    }\n    .valor-tendencia-p{\n        font-family: sans-serif;\n        display: flex;\n        align-items: baseline;\n        gap: 4px;\n        color: #A9D4FF;\n        font-size: 1.1rem;\n        font-weight: 600;\n        white-space:nowrap;\n        //border: 1px solid;\n    }   \n    .icono-tendencia-p{\n        font-size: 1.1rem;\n        line-height: 1;\n        //border: 1px solid;\n    }\n    .fila-inferior-p{\n        margin-top: 1px;\n        //border: 1px solid;\n    }\n    .texto-tendencia-p{\n        color: #c4c4c4;\n        font-family: sans-serif;\n        font-size: 12px;\n        text-align: center;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n    .unidades-tendencia-p{\n        color: #c4c4c4;\n        font-size: 12px;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 170,
-        "y": 1260,
+        "x": 590,
+        "y": 1380,
         "wires": [
             []
         ]
@@ -2542,11 +2465,12 @@
         "id": "63fef50908661270",
         "type": "ui-template",
         "z": "61dd6fcac9de88c9",
+        "d": true,
         "group": "13e1ab6c7e47cd89",
         "page": "",
         "ui": "",
         "name": "UI Lluvia",
-        "order": 1,
+        "order": 6,
         "width": "2",
         "height": "5",
         "head": "",
@@ -2557,11 +2481,9 @@
         "templateScope": "local",
         "className": "",
         "x": 180,
-        "y": 1460,
+        "y": 1880,
         "wires": [
-            [
-                "d6c87fbe089a3ddd"
-            ]
+            []
         ]
     },
     {
@@ -2582,8 +2504,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1530,
-        "y": 1220,
+        "x": 2070,
+        "y": 1340,
         "wires": [
             [
                 "2e2981decdef63bf"
@@ -2685,7 +2607,7 @@
         "encoding": "utf8",
         "allProps": false,
         "x": 430,
-        "y": 620,
+        "y": 660,
         "wires": [
             [
                 "7be04f640debe266"
@@ -2705,8 +2627,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 770,
-        "y": 620,
+        "x": 830,
+        "y": 660,
         "wires": []
     },
     {
@@ -2717,8 +2639,8 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 610,
-        "y": 620,
+        "x": 650,
+        "y": 660,
         "wires": [
             [
                 "24040571a26c64c1",
@@ -2737,8 +2659,8 @@
         "links": [
             "af9c40c9b34f0f41"
         ],
-        "x": 715,
-        "y": 580,
+        "x": 775,
+        "y": 620,
         "wires": []
     },
     {
@@ -2749,8 +2671,8 @@
         "links": [
             "db2b04db7abd8217"
         ],
-        "x": 675,
-        "y": 1420,
+        "x": 995,
+        "y": 1600,
         "wires": [
             [
                 "1173b66e3d9991e5"
@@ -2775,8 +2697,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 800,
-        "y": 1420,
+        "x": 1120,
+        "y": 1600,
         "wires": [
             []
         ]
@@ -2790,7 +2712,7 @@
             "9feb3fb487bc0b40"
         ],
         "x": 75,
-        "y": 1460,
+        "y": 1880,
         "wires": [
             [
                 "63fef50908661270"
@@ -2810,8 +2732,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 370,
-        "y": 1460,
+        "x": 410,
+        "y": 1600,
         "wires": []
     },
     {
@@ -2827,8 +2749,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2200,
-        "y": 1060,
+        "x": 2820,
+        "y": 1080,
         "wires": []
     },
     {
@@ -2843,8 +2765,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1960,
-        "y": 1020,
+        "x": 2580,
+        "y": 1040,
         "wires": [
             [
                 "9e052c3395bbb3cf",
@@ -2858,8 +2780,8 @@
         "z": "61dd6fcac9de88c9",
         "name": "Grupo Temperatura Backup",
         "info": "",
-        "x": 1920,
-        "y": 900,
+        "x": 2540,
+        "y": 920,
         "wires": []
     },
     {
@@ -2874,8 +2796,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1960,
-        "y": 980,
+        "x": 2580,
+        "y": 1000,
         "wires": [
             [
                 "b76bade4a33e3e9f",
@@ -2896,8 +2818,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2200,
-        "y": 980,
+        "x": 2820,
+        "y": 1000,
         "wires": []
     },
     {
@@ -2957,8 +2879,8 @@
         "height": 4,
         "className": "",
         "interpolation": "linear",
-        "x": 2200,
-        "y": 1020,
+        "x": 2820,
+        "y": 1040,
         "wires": [
             []
         ]
@@ -2982,8 +2904,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 2180,
-        "y": 940,
+        "x": 2800,
+        "y": 960,
         "wires": [
             []
         ]
@@ -2997,7 +2919,7 @@
         "label": "",
         "order": 4,
         "chartType": "line",
-        "category": "[\"Temperatura\", \"Índice de calor\", \"Sensación térmica\", \"Punto de rocío\"]",
+        "category": "[\"Temperatura\", \"Temperatura aparente\", \"Índice de calor\", \"Punto de rocío\"]",
         "categoryType": "json",
         "xAxisLabel": "Hora",
         "xAxisProperty": "Periodo",
@@ -3022,15 +2944,15 @@
         "removeOlderUnit": "604800",
         "removeOlderPoints": "9999999999999999999999999",
         "colors": [
-            "#ff3838",
+            "#ffe438",
             "#ffa238",
-            "#fcff38",
+            "#ff3838",
             "#8838ff",
             "#38ffcd",
             "#38ffcd",
             "#38ffcd",
             "#38ffcd",
-            "#38ffcd"
+            "#fcff38"
         ],
         "textColor": [
             "#ffffff"
@@ -3045,7 +2967,7 @@
         "className": "",
         "interpolation": "linear",
         "x": 480,
-        "y": 1040,
+        "y": 1120,
         "wires": [
             [
                 "a602b603cd5d4d24"
@@ -3056,7 +2978,7 @@
         "id": "a602b603cd5d4d24",
         "type": "debug",
         "z": "61dd6fcac9de88c9",
-        "name": "1",
+        "name": "Gráfico",
         "active": false,
         "tosidebar": true,
         "console": false,
@@ -3065,8 +2987,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 650,
-        "y": 1040,
+        "x": 660,
+        "y": 1120,
         "wires": []
     },
     {
@@ -3078,7 +3000,7 @@
             "a030b8a9870dba25"
         ],
         "x": 75,
-        "y": 1040,
+        "y": 1120,
         "wires": [
             [
                 "695a1412e0c5942c"
@@ -3100,13 +3022,13 @@
         "style": true,
         "font": "Arial,Arial,Helvetica,sans-serif",
         "fontSize": "14",
-        "color": "#d6d6d6",
+        "color": "#dedede",
         "wrapText": false,
         "className": "",
         "value": "payload[0][\"uvMax\"]",
         "valueType": "msg",
-        "x": 1430,
-        "y": 1040,
+        "x": 1970,
+        "y": 1140,
         "wires": []
     },
     {
@@ -3119,7 +3041,7 @@
             "ab4c0107d91de31c"
         ],
         "x": 355,
-        "y": 740,
+        "y": 780,
         "wires": []
     },
     {
@@ -3130,12 +3052,301 @@
         "links": [
             "dd3c30e7b2cccb65"
         ],
-        "x": 1285,
-        "y": 1040,
+        "x": 1825,
+        "y": 1140,
         "wires": [
             [
                 "c48abe58522600de"
             ]
+        ]
+    },
+    {
+        "id": "82cff8227ea2509b",
+        "type": "ui-chart",
+        "z": "61dd6fcac9de88c9",
+        "group": "13e1ab6c7e47cd89",
+        "name": "Grafico lluvia 2",
+        "label": "",
+        "order": 5,
+        "chartType": "bar",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "",
+        "xAxisProperty": "Periodo",
+        "xAxisPropertyType": "property",
+        "xAxisType": "category",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "Lluvia_total",
+        "yAxisPropertyType": "property",
+        "ymin": "0",
+        "ymax": "",
+        "bins": 10,
+        "action": "replace",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": false,
+        "removeOlder": 1,
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#64bbf2",
+            "#6393f2",
+            "#63f29a",
+            "#63e9f2",
+            "#64bbf2",
+            "#6393f2",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#ffffff"
+        ],
+        "textColorDefault": false,
+        "gridColor": [
+            "#414f62"
+        ],
+        "gridColorDefault": false,
+        "width": "3",
+        "height": "3",
+        "className": "",
+        "interpolation": "linear",
+        "x": 380,
+        "y": 1720,
+        "wires": [
+            [
+                "cbca890437259e2d"
+            ]
+        ]
+    },
+    {
+        "id": "a67ac9cc17f8a230",
+        "type": "ui-template",
+        "z": "61dd6fcac9de88c9",
+        "group": "13e1ab6c7e47cd89",
+        "page": "",
+        "ui": "",
+        "name": "Tasa actual",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<template>\n    <div class=\"contenedor-principal-ll\">\n        <div class=\"caja-dato-ll\">\n            <div class=\"valor-ll color-lluvia-ll\">{{ obtenerDato('Tasa_actual') }}<span class=\"unidad-ll\">mm/h</span></div>\n            <div class=\"etiqueta-ll\">Tasa actual</div>\n        </div>\n        <div class=\"caja-dato-2\">\n            <div class=\"valor-2 color-lluvia-2\">{{ obtenerDato('ultimas_dos_h') }}<span class=\"unidad-2\">mm</span></div>\n            <div class=\"etiqueta-2\">Últimas 2h</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal-ll {\n        display: flex;\n        justify-content: space-around;\n        align-items: flex-start;\n        width: 100%;\n        font-family: Arial, sans-serif;\n        height: 53px;\n        //border: 1px solid;\n    }\n\n    .caja-dato-ll {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;    /* centra horizontalmente */\n        align-items: center;        /* centra verticalmente */\n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor-ll {\n        font-size: 20px;\n        font-weight: bold;\n        margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-ll {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-ll {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .color-lluvia-ll {\n        color: #e1feffff;\n    }\n\n    .caja-dato-2 {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: center;\n        //border: 1px solid;\n    }\n\n     .valor-2 {\n        font-size: 20px;\n        font-weight: bold;\n        margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-2 {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-2 {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n    \n    .color-lluvia-2 {\n        color: #80fbffff;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 370,
+        "y": 1640,
+        "wires": [
+            [
+                "cbe85ba8fd728d43"
+            ]
+        ]
+    },
+    {
+        "id": "d36b17397de03ffa",
+        "type": "ui-template",
+        "z": "61dd6fcac9de88c9",
+        "group": "13e1ab6c7e47cd89",
+        "page": "",
+        "ui": "",
+        "name": "Título lluvia",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "head": "",
+        "format": "<div class=\"contenedor-lluvia-1\">\n\n    <!-- Contenedor izquierdo -->\n    <div class=\"panel-izquierdo-lluvia-1\">\n        <div class=\"titulo-lluvia-1\">\n            Lluvia\n        </div>\n    </div>\n\n    <!-- Contenedor derecho -->\n    <div class=\"panel-derecho-lluvia-1\">\n\n        <div class=\"titulo-ultima-lluvia-1\">\n            Última lluvia registrada:\n        </div>\n\n        <div class=\"valor-ultima-lluvia-1\">\n            {{ msg.payload?.[0]?.[\"Ultima lluvia detectada\"] ?? \"--\" }}\n        </div>\n\n    </div>\n\n</div>\n\n<style>\n    .contenedor-lluvia-1 {\n        display: flex;\n        justify-content: space-between;\n        align-items: flex-start;\n        margin-bottom: 5px;\n\n        //display: flex;\n        //width: 100%;\n        //height: 40px;\n        //font-family: Arial, sans-serif;\n        //border: 1px solid;\n    }\n\n    .panel-izquierdo-lluvia-1 {\n        flex: 0 0 40%;\n        display: flex;\n        flex-shrink:0;\n        min-width:0;\n        align-items: flex-start;\n        justify-content: flex-start;\n        //border: 1px solid;\n    }\n\n    .titulo-lluvia-1 {\n        color: white;\n        font-size: 1.25rem;\n        //border: 1px solid;\n    }\n\n    .panel-derecho-lluvia-1 {\n        flex-grow: 1;\n        display: flex;\n        min-width: 0;\n        flex-direction: column;\n        justify-content: flex-start;\n        align-items: center;\n        //border: 1px solid;\n    }\n\n    .titulo-ultima-lluvia-1 {\n        color: #DEDEDE;\n        font-size: 0.8rem;\n        font-style: italic;\n        margin-bottom: 2px;\n        text-align: center;\n        line-height: 1.1;\n        //border: 1px solid;\n    }\n\n    .valor-ultima-lluvia-1 {\n        color: #DEDEDE;\n        font-size: 0.9rem;\n        font-weight: 500;\n        text-align: center;\n        //border: 1px solid;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 210,
+        "y": 1600,
+        "wires": [
+            [
+                "d6c87fbe089a3ddd"
+            ]
+        ]
+    },
+    {
+        "id": "4c7fb26ee27746b6",
+        "type": "ui-text",
+        "z": "61dd6fcac9de88c9",
+        "d": true,
+        "group": "13e1ab6c7e47cd89",
+        "order": 3,
+        "width": 2,
+        "height": 2,
+        "name": "Última lluvia registrada",
+        "label": "Última lluvia",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "14",
+        "color": "#d6d6d6",
+        "wrapText": true,
+        "className": "",
+        "value": "payload[0][\"Ultima lluvia detectada\"]",
+        "valueType": "msg",
+        "x": 2520,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "b70285fe5b58c043",
+        "type": "link out",
+        "z": "61dd6fcac9de88c9",
+        "name": "link out 20",
+        "mode": "link",
+        "links": [
+            "d01bdd4400fac7ed"
+        ],
+        "x": 355,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "d01bdd4400fac7ed",
+        "type": "link in",
+        "z": "61dd6fcac9de88c9",
+        "name": "link in 34",
+        "links": [
+            "b70285fe5b58c043"
+        ],
+        "x": 75,
+        "y": 1600,
+        "wires": [
+            [
+                "d36b17397de03ffa"
+            ]
+        ]
+    },
+    {
+        "id": "466dd05accd25c02",
+        "type": "function",
+        "z": "61dd6fcac9de88c9",
+        "name": "Mapeo",
+        "func": "msg.payload = msg.payload.map(item => {\n    return {\n        \"Periodo\": item.Periodo,\n        \"Lluvia_total\": item.Lluvia_total.toFixed(2),\n    };\n}).slice(3, 5);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 1720,
+        "wires": [
+            [
+                "82cff8227ea2509b"
+            ]
+        ]
+    },
+    {
+        "id": "cbca890437259e2d",
+        "type": "debug",
+        "z": "61dd6fcac9de88c9",
+        "name": "Lluvia",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 1720,
+        "wires": []
+    },
+    {
+        "id": "6797604751110a69",
+        "type": "function",
+        "z": "61dd6fcac9de88c9",
+        "name": "Mapeo",
+        "func": "msg.payload = msg.payload\n    .slice(0, 2)\n    .map(item => {\n        return {\n            [item.Periodo]: Number(Number(item.Lluvia_total).toFixed(2))\n        };\n    });\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 1640,
+        "wires": [
+            [
+                "a67ac9cc17f8a230"
+            ]
+        ]
+    },
+    {
+        "id": "cbe85ba8fd728d43",
+        "type": "debug",
+        "z": "61dd6fcac9de88c9",
+        "name": "Lluvia",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "8a976270d0d227eb",
+        "type": "function",
+        "z": "61dd6fcac9de88c9",
+        "name": "Cálculo tendencia",
+        "func": "// Cálculo de la tendencia: Presión actual - hace 3h\n\nlet datos = msg.payload;\nlet actual = parseFloat(datos[datos.length - 1].Barométrica);\nlet hace3h = parseFloat(datos[datos.length - 19].Barométrica); // 18 intervalos de 10 min\nlet diferencia = actual - hace3h;\n\nlet flecha = \"\";\nlet texto = \"\";\n\nif (diferencia >= 3.0) {\n    flecha = \"⬆️⬆️\";\n    texto = \"Subiendo rápidamente\";\n}\nelse if (diferencia >= 1.5) {\n    flecha = \"⬆️\";\n    texto = \"Subiendo\";\n}\nelse if (diferencia >= 0.4) {\n    flecha = \"↗️\";\n    texto = \"Subiendo ligeramente\";\n}\nelse if (diferencia > -0.4) {\n    flecha = \"➡️\";\n    texto = \"Estable\";\n}\nelse if (diferencia > -1.5) {\n    flecha = \"↘️\";\n    texto = \"Bajando ligeramente\";\n}\nelse if (diferencia > -3.0) {\n    flecha = \"⬇️\";\n    texto = \"Bajando\";\n}\nelse {\n    flecha = \"⬇️⬇️\";\n    texto = \"Bajando rápidamente\";\n}\n\nmsg.payload = {\n    flecha,\n    texto,\n    diferencia: diferencia.toFixed(2)\n    //diferencia_raw: diferencia\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1380,
+        "wires": [
+            [
+                "713efdf59c777920",
+                "e9c2a54fa30c9f94"
+            ]
+        ]
+    },
+    {
+        "id": "62f8c7a4c744c344",
+        "type": "ui-template",
+        "z": "61dd6fcac9de88c9",
+        "group": "0336dace9b8ab47c",
+        "page": "",
+        "ui": "",
+        "name": "UI ET",
+        "order": 2,
+        "width": "4",
+        "height": "3",
+        "head": "",
+        "format": "<div class=\"cabecera-ET\">\n\n    <div class=\"panel-superior-ET\">\n        Evapotranspiración\n    </div>\n\n    <div class=\"panel-inferior-ET\">\n        <div class=\"caja-izquierda-ET\">\n            <div class=\"valor-1-ET color-1-ET\">10.1<span class=\"unidad-1-ET\">mm/h</span></div>\n            <div class=\"etiqueta-1-ET\">Tasa actual</div>\n        </div>\n        <div class=\"caja-derecha-ET\">\n            <div class=\"valor-2-ET color-2-ET\">20.1<span class=\"unidad-2-ET\">mm</span></div>\n            <div class=\"etiqueta-2-ET\">Últimas 2h</div>\n        </div>\n    </div>\n</div>\n\n<style>\n\n    .cabecera-ET {\n        display: flex;\n        flex-direction: column;\n        border: 1px solid;\n    }\n\n    /* ---------- IZQUIERDA ---------- \n\n    .info-presion-p {\n        font-family: Arial;\n        flex: 1;\n        //line-height: 1.1;\n    }\n    .titulo-principal-presion-p {\n        color: white;\n        font-size: 1.25rem;\n    }\n    \n    .panel-tendencia-p {\n        width: 120px;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        margin-top: 2px;\n        //border: 1px solid;\n    }\n    .valor-tendencia-p{\n        font-family: sans-serif;\n        display: flex;\n        align-items: baseline;\n        gap: 4px;\n        color: #A9D4FF;\n        font-size: 1.1rem;\n        font-weight: 600;\n        white-space:nowrap;\n        //border: 1px solid;\n    }   \n    .icono-tendencia-p{\n        font-size: 1.1rem;\n        line-height: 1;\n        //border: 1px solid;\n    }\n    .fila-inferior-p{\n        margin-top: 1px;\n        //border: 1px solid;\n    }\n    .texto-tendencia-p{\n        color: #c4c4c4;\n        font-family: sans-serif;\n        font-size: 12px;\n        text-align: center;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n    .unidades-tendencia-p{\n        color: #c4c4c4;\n        font-size: 12px;\n        white-space:nowrap;\n        //border: 1px solid;\n    }*/\n\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1230,
+        "y": 1100,
+        "wires": [
+            []
         ]
     },
     {
@@ -5894,7 +6105,7 @@
         "type": "function",
         "z": "cf3d3e629b327c6f",
         "name": "Consulta SQL",
-        "func": "let rango = msg.rango;\n\nif (rango == 1){\n    msg.topic = `SELECT \n                    datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                    outTemp AS outTemp,\n                    inTemp AS inTemp,\n                    outHumidity AS outHumidity,\n                    inHumidity AS inHumidity,\n                    dewpoint AS dewpoint,\n                    pressure AS pressure,\n                    rainRate AS rainRate,\n                    heatindex AS heatindex,\n                    windchill AS windchill,\n                    windSpeed AS windSpeed,\n                    windDir AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                ORDER BY periodo ASC;`;\n\n} else if (rango == 2){\n    msg.topic = `SELECT \n                    strftime('%Y-%m-%d %H:00', dateTime, 'unixepoch', 'localtime') AS periodo,\n                    AVG(outTemp) AS outTemp,\n                    AVG(inTemp) AS inTemp,\n                    AVG(outHumidity) AS outHumidity,\n                    AVG(inHumidity) AS inHumidity,\n                    AVG(dewpoint) AS dewpoint,\n                    AVG(pressure) AS pressure,\n                    AVG(rainRate) AS rainRate,\n                    AVG(heatindex) AS heatindex,\n                    AVG(windchill) AS windchill,\n                    AVG(windSpeed) AS windSpeed,\n                    AVG(windDir) AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                GROUP BY strftime('%Y-%m-%d %H', dateTime, 'unixepoch', 'localtime')\n                ORDER BY periodo ASC;`;\n\n}else{\n    msg.topic = `SELECT \n                    strftime('%Y-%m-%d', dateTime, 'unixepoch', 'localtime') AS periodo,\n                    AVG(outTemp) AS outTemp,\n                    AVG(inTemp) AS inTemp,\n                    AVG(outHumidity) AS outHumidity,\n                    AVG(inHumidity) AS inHumidity,\n                    AVG(dewpoint) AS dewpoint,\n                    AVG(pressure) AS pressure,\n                    AVG(rainRate) AS rainRate,\n                    AVG(heatindex) AS heatindex,\n                    AVG(windchill) AS windchill,\n                    AVG(windSpeed) AS windSpeed,\n                    AVG(windDir) AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                GROUP BY strftime('%Y-%m-%d', dateTime, 'unixepoch', 'localtime')\n                ORDER BY periodo ASC;`;\n}\nreturn msg;",
+        "func": "let rango = msg.rango;\n\nif (rango == 1){\n    msg.topic = `SELECT \n                    datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                    outTemp AS outTemp,\n                    inTemp AS inTemp,\n                    outHumidity AS outHumidity,\n                    inHumidity AS inHumidity,\n                    dewpoint AS dewpoint,\n                    barometer AS pressure,\n                    rainRate AS rainRate,\n                    heatindex AS heatindex,\n                    windchill AS windchill,\n                    windSpeed AS windSpeed,\n                    windDir AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                ORDER BY periodo ASC;`;\n\n} else if (rango == 2){\n    msg.topic = `SELECT \n                    strftime('%Y-%m-%d %H:00', dateTime, 'unixepoch', 'localtime') AS periodo,\n                    AVG(outTemp) AS outTemp,\n                    AVG(inTemp) AS inTemp,\n                    AVG(outHumidity) AS outHumidity,\n                    AVG(inHumidity) AS inHumidity,\n                    AVG(dewpoint) AS dewpoint,\n                    AVG(pressure) AS pressure,\n                    AVG(rainRate) AS rainRate,\n                    AVG(heatindex) AS heatindex,\n                    AVG(windchill) AS windchill,\n                    AVG(windSpeed) AS windSpeed,\n                    AVG(windDir) AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                GROUP BY strftime('%Y-%m-%d %H', dateTime, 'unixepoch', 'localtime')\n                ORDER BY periodo ASC;`;\n\n}else{\n    msg.topic = `SELECT \n                    strftime('%Y-%m-%d', dateTime, 'unixepoch', 'localtime') AS periodo,\n                    AVG(outTemp) AS outTemp,\n                    AVG(inTemp) AS inTemp,\n                    AVG(outHumidity) AS outHumidity,\n                    AVG(inHumidity) AS inHumidity,\n                    AVG(dewpoint) AS dewpoint,\n                    AVG(pressure) AS pressure,\n                    AVG(rainRate) AS rainRate,\n                    AVG(heatindex) AS heatindex,\n                    AVG(windchill) AS windchill,\n                    AVG(windSpeed) AS windSpeed,\n                    AVG(windDir) AS windDir\n                FROM archive \n                WHERE date(dateTime, 'unixepoch', 'localtime') BETWEEN '${msg.payload.fecha1}' AND '${msg.payload.fecha2}'\n                GROUP BY strftime('%Y-%m-%d', dateTime, 'unixepoch', 'localtime')\n                ORDER BY periodo ASC;`;\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
