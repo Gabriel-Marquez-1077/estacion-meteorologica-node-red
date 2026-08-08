@@ -1388,8 +1388,7 @@
         "y": 1060,
         "wires": [
             [
-                "b39eceb91f66171d",
-                "f8d62555e093f02e"
+                "b39eceb91f66171d"
             ]
         ]
     },
@@ -1620,7 +1619,6 @@
                 "abce5cdb73e0efbb",
                 "d5d6107c4f1c51be",
                 "e2a0f37af834d03a",
-                "01dc941a7d275043",
                 "dd3c30e7b2cccb65",
                 "b70285fe5b58c043"
             ]
@@ -1640,7 +1638,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 420,
-        "y": 900,
+        "y": 860,
         "wires": []
     },
     {
@@ -1650,7 +1648,7 @@
         "name": "Extraer fecha y hora",
         "info": "let fecha = new Date(item.dateTime * 1000);\n\nlet año = fecha.getFullYear();\nlet mes = fecha.getMonth() + 1;  // empieza en 0\nlet dia = fecha.getDate();\n\nlet hora = fecha.getHours();\nlet minutos = fecha.getMinutes();\nlet segundos = fecha.getSeconds();",
         "x": 150,
-        "y": 760,
+        "y": 720,
         "wires": []
     },
     {
@@ -1680,13 +1678,18 @@
                 "t": "eq",
                 "v": "msg4",
                 "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "msg5",
+                "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": true,
-        "outputs": 4,
+        "outputs": 5,
         "x": 570,
-        "y": 360,
+        "y": 380,
         "wires": [
             [
                 "9feb3fb487bc0b40"
@@ -1699,6 +1702,9 @@
             ],
             [
                 "a030b8a9870dba25"
+            ],
+            [
+                "54b8c247b0fbdcac"
             ]
         ]
     },
@@ -1707,7 +1713,7 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Consulta múltiple DB",
-        "func": "// Consulta múltiple a la DB\n// msg1: Consulta datos actuales\n// msg2: Valores máximos\n// msg3: Consulta lluvia acumulada últimas 2h, día, semana y mes\n// msg4: barometer, temp, heatindex, windchill, dewpoint últimas 24h\n\nlet msg1 = { \n\n    etiqueta: \"msg1\",\n    topic: \"SELECT * FROM archive ORDER BY dateTime DESC LIMIT 1\" };\n\nlet msg2 = { // Consultas múltiples\n\n    etiqueta: \"msg2\",\n    topic: `SELECT\n\n            -- Fecha actual\n            (SELECT dateTime\n            FROM archive\n            ORDER BY dateTime DESC\n            LIMIT 1) AS fecha,\n\n            -- Última lluvia detectada\n            (SELECT dateTime\n            FROM archive\n            WHERE rain > 0\n            ORDER BY dateTime DESC\n            LIMIT 1) AS ultimaLluvia,\n\n            -- Temperatura máxima 24h\n            (SELECT MAX(outTemp)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS tempMax,\n            \n            -- Humedad máxima 24h\n            (SELECT MAX(outHumidity)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS humMax,\n            \n            -- Radiación UV máxima 24h (pendiente)\n            (SELECT MAX(UV)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS uvMax;      \n            `};\n\nlet msg3 = {\n\n    etiqueta: \"msg3\", \n    topic: `SELECT 'Tasa_actual' AS Periodo,\n                IFNULL(rainRate, 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime = (SELECT MAX(dateTime) FROM archive)\n\n            UNION ALL\n\n            SELECT 'ultimas_dos_h' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', '-2 hours')\n\n            UNION ALL\n            \n            SELECT 'Día' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '+5 hours')\n\n            UNION ALL\n\n            SELECT 'Semana' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '+5 hours', '-7 days')\n\n            UNION ALL\n\n            SELECT 'Mes' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of month', '+5 hours');\n            `}; // Se suman 5 horas debido a que el comando 'start of ...' hace el calculo con UTC-0 y luego se pasa a hora local dando 5 horas menos de las que son\n\nlet msg4 = {\n\n    etiqueta: \"msg4\", \n    topic:  `SELECT \n                datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                barometer,\n                outTemp,\n                appTemp,\n                heatindex,\n                dewpoint\n            FROM archive\n            WHERE dateTime >= (strftime('%s', 'now') - 86400)\n            ORDER BY dateTime ASC;\n            `};\n\nreturn [[msg1, msg2, msg3, msg4]]; \n// Al ponerlos dentro de un array doble, Node-RED envía los dos mensajes uno tras otro",
+        "func": "// Consulta múltiple a la DB\n// msg1: Consulta datos actuales\n// msg2: Valores máximos\n// msg3: Consulta lluvia acumulada últimas 2h, día, semana y mes\n// msg4: barometer, temp, heatindex, windchill, dewpoint últimas 24h\n// msg5: Evapotranspiración, última hora, último día\n\nlet msg1 = { \n\n    etiqueta: \"msg1\",\n    topic: \"SELECT * FROM archive ORDER BY dateTime DESC LIMIT 1\" };\n\nlet msg2 = { // Consultas múltiples\n\n    etiqueta: \"msg2\",\n    topic: `SELECT\n\n            -- Fecha actual\n            (SELECT dateTime\n            FROM archive\n            ORDER BY dateTime DESC\n            LIMIT 1) AS fecha,\n\n            -- Última lluvia detectada\n            (SELECT dateTime\n            FROM archive\n            WHERE rain > 0\n            ORDER BY dateTime DESC\n            LIMIT 1) AS ultimaLluvia,\n\n            -- Temperatura máxima 24h\n            (SELECT MAX(outTemp)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS tempMax,\n            \n            -- Humedad máxima 24h\n            (SELECT MAX(outHumidity)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS humMax,\n            \n            -- Radiación UV máxima 24h (pendiente)\n            (SELECT MAX(UV)\n            FROM archive\n            WHERE dateTime >= (strftime('%s','now') - 86400)) AS uvMax;      \n            `};\n\nlet msg3 = {\n\n    etiqueta: \"msg3\", \n    topic: `SELECT 'Tasa_actual' AS Periodo,\n                IFNULL(rainRate, 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime = (SELECT MAX(dateTime) FROM archive)\n\n            UNION ALL\n\n            SELECT 'ultimas_dos_h' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', '-2 hours')\n\n            UNION ALL\n            \n            SELECT 'Día' AS Periodo,\n                IFNULL(SUM(rain), 0) AS Lluvia_total\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '-1 day', '+5 hours')\n\n            UNION ALL\n\n            SELECT 'Semana' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of day', '+5 hours', '-8 day')\n\n            UNION ALL\n\n            SELECT 'Mes' AS Periodo,\n                IFNULL(SUM(sum), 0) AS Lluvia_total\n            FROM archive_day_rain\n            WHERE dateTime >= strftime('%s', 'now', 'start of month', '+5 hours');\n            `}; // Se suman 5 horas debido a que el comando 'start of ...' hace el calculo con UTC-0 y luego se pasa a hora local dando 5 horas menos de las que son\n\nlet msg4 = {\n\n    etiqueta: \"msg4\", \n    topic:  `SELECT \n                datetime(dateTime, 'unixepoch', 'localtime') AS periodo,\n                barometer,\n                outTemp,\n                appTemp,\n                heatindex,\n                dewpoint\n            FROM archive\n            WHERE dateTime >= (strftime('%s', 'now') - 86400)\n            ORDER BY dateTime ASC;\n            `};\n\nlet msg5 = {\n\n    etiqueta: \"msg5\",\n    topic: `SELECT\n\n                -- ET acumulada última hora\n                (\n                    SELECT IFNULL(SUM(ET), 0)\n                    FROM archive\n                    WHERE dateTime >= (strftime('%s','now') - 3600)\n                ) AS etUltimaHora,\n\n                -- ET acumulada del día\n                (\n                    SELECT IFNULL(SUM(ET), 0)\n                    FROM archive\n                    WHERE dateTime >= strftime('%s', 'now', 'start of day', '-1 day', '+5 hours')\n                ) AS etHoy;\n            `};\n\nreturn [[msg1, msg2, msg3, msg4, msg5]]; \n// Al ponerlos dentro de un array doble, Node-RED envía los dos mensajes uno tras otro",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1715,7 +1721,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 360,
+        "y": 380,
         "wires": [
             [
                 "eb23e56cce4d4db9"
@@ -1729,7 +1735,8 @@
         "name": "link out 14",
         "mode": "link",
         "links": [
-            "9eaa84d12dc7febf"
+            "9eaa84d12dc7febf",
+            "e1156b2f6bf1ddef"
         ],
         "x": 775,
         "y": 220,
@@ -1744,7 +1751,7 @@
             "07fe6afcac032256"
         ],
         "x": 75,
-        "y": 360,
+        "y": 380,
         "wires": [
             [
                 "73d2eb09862a9e24"
@@ -1777,7 +1784,7 @@
         "links": [
             "ea46fe9c6eda839e"
         ],
-        "x": 675,
+        "x": 685,
         "y": 340,
         "wires": []
     },
@@ -1790,7 +1797,7 @@
         "links": [
             "af14ea9841dde090"
         ],
-        "x": 675,
+        "x": 685,
         "y": 380,
         "wires": []
     },
@@ -1804,7 +1811,7 @@
             "24a7233d85918327",
             "77b15b444311696f"
         ],
-        "x": 675,
+        "x": 685,
         "y": 420,
         "wires": []
     },
@@ -1822,7 +1829,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 590,
-        "y": 460,
+        "y": 540,
         "wires": []
     },
     {
@@ -1892,7 +1899,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 1240,
-        "y": 1180,
+        "y": 1140,
         "wires": []
     },
     {
@@ -1948,14 +1955,14 @@
         "type": "function",
         "z": "61dd6fcac9de88c9",
         "name": "Mapeo",
-        "func": "msg.payload = \"soleado\";\nreturn msg;",
+        "func": "msg.payload = \"parcial\";\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1890,
+        "x": 1870,
         "y": 1340,
         "wires": [
             [
@@ -1967,14 +1974,14 @@
         "id": "a950d52f207c3930",
         "type": "inject",
         "z": "61dd6fcac9de88c9",
-        "name": "soleado",
+        "name": "parcial",
         "props": [],
         "repeat": "",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 1750,
+        "x": 1710,
         "y": 1340,
         "wires": [
             [
@@ -2025,7 +2032,7 @@
         "sql": "",
         "name": "Database",
         "x": 420,
-        "y": 360,
+        "y": 380,
         "wires": [
             [
                 "87fe76399356a013",
@@ -2054,7 +2061,7 @@
         "value": "payload[0].fecha",
         "valueType": "msg",
         "x": 420,
-        "y": 700,
+        "y": 740,
         "wires": []
     },
     {
@@ -2077,8 +2084,8 @@
         "className": "",
         "value": "payload.sun_rise",
         "valueType": "msg",
-        "x": 830,
-        "y": 700,
+        "x": 520,
+        "y": 660,
         "wires": []
     },
     {
@@ -2101,8 +2108,8 @@
         "className": "",
         "value": "payload.sun_set",
         "valueType": "msg",
-        "x": 830,
-        "y": 740,
+        "x": 520,
+        "y": 700,
         "wires": []
     },
     {
@@ -2126,7 +2133,7 @@
         "value": "payload[0][\"tempMax\"]",
         "valueType": "msg",
         "x": 440,
-        "y": 820,
+        "y": 780,
         "wires": []
     },
     {
@@ -2150,7 +2157,7 @@
         "value": "payload[0][\"humMax\"]",
         "valueType": "msg",
         "x": 430,
-        "y": 860,
+        "y": 820,
         "wires": []
     },
     {
@@ -2222,7 +2229,7 @@
         "group": "13e1ab6c7e47cd89",
         "name": "Grafico lluvia 1",
         "label": "",
-        "order": 4,
+        "order": 3,
         "chartType": "bar",
         "category": "",
         "categoryType": "none",
@@ -2289,10 +2296,10 @@
         "value": "payload[0][\"Humedad exterior\"]",
         "valueType": "msg",
         "width": 4,
-        "height": 3,
+        "height": "3",
         "gtype": "gauge-half",
         "gstyle": "rounded",
-        "title": "Humedad exterior",
+        "title": "",
         "alwaysShowTitle": false,
         "floatingTitlePosition": "top-left",
         "units": "%",
@@ -2449,7 +2456,7 @@
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<div class=\"cabecera-presion-p\">\n\n    <div class=\"info-presion-p\">\n        <div class=\"titulo-principal-presion-p\">\n            Presión barométrica\n        </div>\n        \n    </div>\n\n    <div class=\"panel-tendencia-p\">\n        <div class=\"valor-tendencia-p\">\n            <span class=\"icono-tendencia-p\">{{msg.payload.flecha}}</span>\n            {{msg.payload.diferencia}}\n            <span class=\"unidades-tendencia-p\">hPa</span>\n        </div>\n        <div class=\"fila-inferior-p\">\n            <div class=\"texto-tendencia-p\">\n                {{msg.payload.texto}}\n            </div>\n        </div>\n    </div>\n\n</div>\n\n<style>\n    /*<div class=\"contenedor-titulo-presion\">\n        <div class=\"titulo-principal-presion\">Presión barométrica</div>\n        <div class=\"subtitulo-italic-presion\">Últimas 24h</div>\n    </div>*/\n\n    .cabecera-presion-p {\n        display: flex;\n        justify-content: space-between;\n        align-items: flex-start;\n        margin-bottom: 19px;\n        //border: 1px solid;\n    }\n\n    /* ---------- IZQUIERDA ---------- */\n\n    .info-presion-p {\n        font-family: Arial;\n        flex: 1;\n        //line-height: 1.1;\n    }\n    .titulo-principal-presion-p {\n        color: white;\n        font-size: 1.25rem;\n    }\n\n    /* ---------- DERECHA ---------- */\n    \n    .panel-tendencia-p {\n        width: 120px;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        margin-top: 2px;\n        //border: 1px solid;\n    }\n    .valor-tendencia-p{\n        font-family: sans-serif;\n        display: flex;\n        align-items: baseline;\n        gap: 4px;\n        color: #A9D4FF;\n        font-size: 1.1rem;\n        font-weight: 600;\n        white-space:nowrap;\n        //border: 1px solid;\n    }   \n    .icono-tendencia-p{\n        font-size: 1.1rem;\n        line-height: 1;\n        //border: 1px solid;\n    }\n    .fila-inferior-p{\n        margin-top: 1px;\n        //border: 1px solid;\n    }\n    .texto-tendencia-p{\n        color: #c4c4c4;\n        font-family: sans-serif;\n        font-size: 12px;\n        text-align: center;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n    .unidades-tendencia-p{\n        color: #c4c4c4;\n        font-size: 12px;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n\n</style>",
+        "format": "<div class=\"cabecera-presion-p\">\n\n    <div class=\"info-presion-p\">\n        <div class=\"titulo-principal-presion-p\">\n            Presión barométrica\n        </div>\n        \n    </div>\n\n    <div class=\"panel-tendencia-p\">\n        <div class=\"valor-tendencia-p\">\n            <span class=\"icono-tendencia-p\">{{msg.payload.flecha}}</span>\n            {{msg.payload.diferencia}}\n            <span class=\"unidades-tendencia-p\">hPa</span>\n        </div>\n        <div class=\"fila-inferior-p\">\n            <div class=\"texto-tendencia-p\">\n                {{msg.payload.texto}}\n            </div>\n        </div>\n    </div>\n\n</div>\n\n<style>\n    /*<div class=\"contenedor-titulo-presion\">\n        <div class=\"titulo-principal-presion\">Presión barométrica</div>\n        <div class=\"subtitulo-italic-presion\">Últimas 24h</div>\n    </div>*/\n\n    .cabecera-presion-p {\n        display: flex;\n        justify-content: space-between;\n        align-items: flex-start;\n        margin-bottom: 19px;\n        //border: 1px solid;\n    }\n\n    /* ---------- IZQUIERDA ---------- */\n\n    .info-presion-p {\n        font-family: Arial;\n        flex: 1;\n        //line-height: 1.1;\n    }\n    .titulo-principal-presion-p {\n        color: white;\n        font-size: 1.25rem;\n    }\n\n    /* ---------- DERECHA ---------- */\n    \n    .panel-tendencia-p {\n        width: 125px;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        margin-top: 2px;\n        //border: 1px solid;\n    }\n    .valor-tendencia-p{\n        font-family: Arial;\n        display: flex;\n        align-items: baseline;\n        gap: 4px;\n        color: #A9D4FF;\n        font-size: 1.1rem;\n        font-weight: bold;\n        white-space:nowrap;\n        //border: 1px solid;\n    }   \n    .icono-tendencia-p{\n        font-size: 1.1rem;\n        line-height: 1;\n        //border: 1px solid;\n    }\n    .fila-inferior-p{\n        margin-top: 1px;\n        //border: 1px solid;\n    }\n    .texto-tendencia-p{\n        color: #c4c4c4;\n        font-family: sans-serif;\n        font-size: 12px;\n        text-align: center;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n    .unidades-tendencia-p{\n        color: #c4c4c4;\n        font-size: 12px;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
@@ -2470,7 +2477,7 @@
         "page": "",
         "ui": "",
         "name": "UI Lluvia",
-        "order": 6,
+        "order": 5,
         "width": "2",
         "height": "5",
         "head": "",
@@ -2498,7 +2505,7 @@
         "width": "3",
         "height": "5",
         "head": "",
-        "format": "<template>\n    <div style=\"text-align:center\">\n\n        <img :src=\"icono\" class=\"icono-clima\">\n\n        <div style=\"color:white; margin-top:0px;\">\n            {{ msg.payload }}\n        </div>\n\n    </div>\n</template>\n\n<script>\n    export default {\n  data() {\n    return {\n      icono: \"/weather-icons/clear-day.svg\"\n    }\n  },\n\n  watch: {\n    msg: {\n      handler(msg) {\n\n        if (!msg || !msg.payload) return;\n\n        let clima = msg.payload.toLowerCase();\n\n        // Normalizar texto\n        if (clima.includes(\"soleado\")) clima = \"soleado\";\n        else if (clima.includes(\"parcial\")) clima = \"parcial\";\n        else if (clima.includes(\"nublado\")) clima = \"nublado\";\n        else if (clima.includes(\"lluvia\")) clima = \"lluvia\";\n        else if (clima.includes(\"tormenta\")) clima = \"tormenta\";\n\n        const iconos = {\n          \"soleado\": \"/weather-icons/clear-day.svg\",\n          \"parcial\": \"/weather-icons/partly-cloudy-day.svg\",\n          \"nublado\": \"/weather-icons/cloudy.svg\",\n          \"lluvia\": \"/weather-icons/rain.svg\",\n          \"tormenta\": \"/weather-icons/thunderstorms.svg\"\n        };\n\n        this.icono = iconos[clima] || \"/weather-icons/cloudy.svg\";\n      },\n      immediate: true\n    }\n  }\n}\n</script>\n\n<style>\n  .icono-clima {\n    width: 100%;\n    height: auto; /* mantiene proporción */\n    max-height: 100%; /* evita que se desborde */\n    object-fit: contain; /* asegura que no se recorte */\n  }\n</style>\n",
+        "format": "<template>\n    <div style=\"text-align:center\">\n\n        <img :src=\"icono\" class=\"icono-clima\">\n\n        <div style=\"color:white; margin-top:0px;\">\n            {{ msg.payload }}\n        </div>\n\n    </div>\n</template>\n\n<script>\n    export default {\n  data() {\n    return {\n      icono: \"/weather-icons/partly-cloudy-day.svg\"\n    }\n  },\n\n  watch: {\n    msg: {\n      handler(msg) {\n\n        if (!msg || !msg.payload) return;\n\n        let clima = msg.payload.toLowerCase();\n\n        // Normalizar texto\n        if (clima.includes(\"soleado\")) clima = \"soleado\";\n        else if (clima.includes(\"parcial\")) clima = \"parcial\";\n        else if (clima.includes(\"nublado\")) clima = \"nublado\";\n        else if (clima.includes(\"lluvia\")) clima = \"lluvia\";\n        else if (clima.includes(\"tormenta\")) clima = \"tormenta\";\n\n        const iconos = {\n          \"soleado\": \"/weather-icons/clear-day.svg\",\n          \"parcial\": \"/weather-icons/partly-cloudy-day.svg\",\n          \"nublado\": \"/weather-icons/cloudy.svg\",\n          \"lluvia\": \"/weather-icons/rain.svg\",\n          \"tormenta\": \"/weather-icons/thunderstorms.svg\"\n        };\n\n        this.icono = iconos[clima] || \"/weather-icons/cloudy.svg\";\n      },\n      immediate: true\n    }\n  }\n}\n</script>\n\n<style>\n  .icono-clima {\n    width: 100%;\n    height: auto; /* mantiene proporción */\n    max-height: 100%; /* evita que se desborde */\n    object-fit: contain; /* asegura que no se recorte */\n    border-line: 1px;\n  }\n</style>\n",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
@@ -2523,91 +2530,19 @@
         "wires": []
     },
     {
-        "id": "097470dac564b0c5",
-        "type": "inject",
-        "z": "61dd6fcac9de88c9",
-        "name": "Inject",
-        "props": [],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "x": 130,
-        "y": 100,
-        "wires": [
-            [
-                "21e117e6ba4b8ea0"
-            ]
-        ]
-    },
-    {
-        "id": "21e117e6ba4b8ea0",
-        "type": "function",
-        "z": "61dd6fcac9de88c9",
-        "name": "Topic",
-        "func": "// Consultamos los datos de presión de las últimas 24hrs\nmsg.topic = `SELECT \n            *\n            FROM archive\n            ORDER BY dateTime DESC\n            LIMIT 1;`;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 270,
-        "y": 100,
-        "wires": [
-            [
-                "17d12f13cf4d8049"
-            ]
-        ]
-    },
-    {
-        "id": "17d12f13cf4d8049",
-        "type": "sqlite",
-        "z": "61dd6fcac9de88c9",
-        "mydb": "2c70fe4a36266f85",
-        "sqlquery": "msg.topic",
-        "sql": "",
-        "name": "Database",
-        "x": 420,
-        "y": 100,
-        "wires": [
-            [
-                "c33644ebac3e7095"
-            ]
-        ]
-    },
-    {
-        "id": "c33644ebac3e7095",
-        "type": "debug",
-        "z": "61dd6fcac9de88c9",
-        "name": "Datos actuales",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 600,
-        "y": 100,
-        "wires": []
-    },
-    {
         "id": "01dc941a7d275043",
         "type": "file in",
         "z": "61dd6fcac9de88c9",
         "name": "leer almanac.json",
-        "filename": "/var/www/html/weewx/almanac.json",
+        "filename": "/var/www/html/weewx/reporte_almanac/almanac.json",
         "filenameType": "str",
         "format": "utf8",
         "chunk": false,
         "sendError": false,
         "encoding": "utf8",
         "allProps": false,
-        "x": 430,
-        "y": 660,
+        "x": 1190,
+        "y": 220,
         "wires": [
             [
                 "7be04f640debe266"
@@ -2627,8 +2562,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 830,
-        "y": 660,
+        "x": 1530,
+        "y": 220,
         "wires": []
     },
     {
@@ -2639,13 +2574,11 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 650,
-        "y": 660,
+        "x": 1370,
+        "y": 220,
         "wires": [
             [
                 "24040571a26c64c1",
-                "f1204ec42953a182",
-                "fb45a3ab745fb84b",
                 "db2b04db7abd8217"
             ]
         ]
@@ -2657,10 +2590,12 @@
         "name": "link out 13",
         "mode": "link",
         "links": [
-            "af9c40c9b34f0f41"
+            "af9c40c9b34f0f41",
+            "091d1972bd652729",
+            "601b482c33fa4607"
         ],
-        "x": 775,
-        "y": 620,
+        "x": 1475,
+        "y": 260,
         "wires": []
     },
     {
@@ -2691,7 +2626,7 @@
         "width": "3",
         "height": "5",
         "head": "",
-        "format": "<template>\n    <div style=\"text-align:center\">\n\n        <img :src=\"icono\" class=\"icono-clima\">\n\n        <div style=\"color:white; margin-top:0px;\">\n            {{ msg.payload.moon_phase }}\n        </div>\n\n    </div>\n</template>\n\n<script>\n    export default {\n  data() {\n    return {\n      icono: \"/weather-icons/clear-day.svg\"\n    }\n  },\n\n  watch: {\n    msg: {\n      handler(msg) {\n\n        if (!msg || !msg.payload) return;\n\n        let clima = msg.payload.toLowerCase();\n\n        // Normalizar texto\n        if (clima.includes(\"soleado\")) clima = \"soleado\";\n        else if (clima.includes(\"parcial\")) clima = \"parcial\";\n        else if (clima.includes(\"nublado\")) clima = \"nublado\";\n        else if (clima.includes(\"lluvia\")) clima = \"lluvia\";\n        else if (clima.includes(\"tormenta\")) clima = \"tormenta\";\n\n        const iconos = {\n          \"soleado\": \"/weather-icons/clear-day.svg\",\n          \"parcial\": \"/weather-icons/partly-cloudy-day.svg\",\n          \"nublado\": \"/weather-icons/cloudy.svg\",\n          \"lluvia\": \"/weather-icons/rain.svg\",\n          \"tormenta\": \"/weather-icons/thunderstorms.svg\"\n        };\n\n        this.icono = iconos[clima] || \"/weather-icons/cloudy.svg\";\n      },\n      immediate: true\n    }\n  }\n}\n</script>\n\n<style>\n  .icono-clima {\n    width: 100%;\n    height: auto; /* mantiene proporción */\n    max-height: 100%; /* evita que se desborde */\n    object-fit: contain; /* asegura que no se recorte */\n  }\n</style>\n",
+        "format": "<template>\n    <div class=\"fase-lunar\">\n\n        <!-- Imagen de la fase lunar -->\n        <img \n            :src=\"iconoLunar\" \n            class=\"icono-lunar\"\n        >\n\n        <!-- Nombre de la fase lunar -->\n        <div class=\"nombre-fase\">\n          {{ nombreFase }}\n        </div>\n\n        <!-- Porcentaje luna llena -->\n        <div class=\"porcentaje-luna\">\n          {{ msg.payload.moon_fullness }}% de luna llena\n        </div>\n\n    </div>\n</template>\n<script>\nexport default {\n  data() {\n    return {\n      iconoLunar: \"/moon-icons/moon-new.svg\",\n      nombreFase: \"Luna nueva\"\n    }\n  },\n\n  watch: {\n    msg: {\n      handler(msg) {\n\n        if (!msg || !msg.payload || !msg.payload.moon_phase) {\n          return;\n        }\n\n        // Obtener la fase lunar que llega en el payload\n        const fase = msg.payload.moon_phase.toLowerCase().trim();\n\n        // Relación entre fase, imagen y traducción\n        const fasesLunares = {\n\n          \"new moon\": {\n            imagen: \"/moon-icons/moon-new.svg\",\n            nombre: \"Luna nueva\"\n          },\n\n          \"waxing crescent\": {\n            imagen: \"/moon-icons/moon-waxing-crescent.svg\",\n            nombre: \"Luna creciente\"\n          },\n\n          \"first quarter\": {\n            imagen: \"/moon-icons/moon-first-quarter.svg\",\n            nombre: \"Cuarto creciente\"\n          },\n\n          \"waxing gibbous\": {\n            imagen: \"/moon-icons/moon-waxing-gibbous.svg\",\n            nombre: \"Gibosa creciente\"\n          },\n\n          \"full moon\": {\n            imagen: \"/moon-icons/moon-full.svg\",\n            nombre: \"Luna llena\"\n          },\n\n          \"waning gibbous\": {\n            imagen: \"/moon-icons/moon-waning-gibbous.svg\",\n            nombre: \"Gibosa menguante\"\n          },\n\n          \"last quarter\": {\n            imagen: \"/moon-icons/moon-last-quarter.svg\",\n            nombre: \"Cuarto menguante\"\n          },\n\n          \"waning crescent\": {\n            imagen: \"/moon-icons/moon-waning-crescent.svg\",\n            nombre: \"Luna menguante\"\n          }\n        };\n\n        // Buscar la fase recibida\n        const resultado = fasesLunares[fase];\n\n        // Si existe la fase, actualizar imagen y texto\n        if (resultado) {\n          this.iconoLunar = resultado.imagen;\n          this.nombreFase = resultado.nombre;\n        }\n      },\n\n      immediate: true\n    }\n  }\n}\n</script>\n\n<style>\n  .fase-lunar {\n    width: 100%;\n    text-align: center;\n    border: 1px solid;\n  }\n\n  .icono-lunar {\n    width: 100%;\n    height: auto;\n    max-height: 100%;\n    object-fit: contain;\n    display: block;\n    margin: 0 auto;\n    border: 1px solid;\n  }\n\n  .nombre-fase {\n    font-family: Arial;\n    color: #ffffffff;\n    //margin-top: 10px;\n    font-size: 16px;\n    text-align: center;\n    //border: 1px solid;\n  }\n\n  .porcentaje-luna {\n    font-family: Arial;\n    color: #DEDEDEDE;\n    //margin-top: 10px;\n    font-size: 12px;\n    text-align: center;\n    //border: 1px solid;\n  }\n</style>\n",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
@@ -2700,7 +2635,9 @@
         "x": 1120,
         "y": 1600,
         "wires": [
-            []
+            [
+                "ca5b093cfddd3435"
+            ]
         ]
     },
     {
@@ -2737,187 +2674,13 @@
         "wires": []
     },
     {
-        "id": "156bf21611044f58",
-        "type": "debug",
-        "z": "61dd6fcac9de88c9",
-        "name": "Gráfico barras",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 2820,
-        "y": 1080,
-        "wires": []
-    },
-    {
-        "id": "7a339c2f3317aa4d",
-        "type": "function",
-        "z": "61dd6fcac9de88c9",
-        "name": "Mapeo gráfico",
-        "func": "// Convertimos la fecha a un formato funcional\n//let fecha = new Date(msg.payload[0].dateTime*1000);\n\nlet fecha = new Date(msg.payload[0].dateTime * 1000).toLocaleString();\n\nmsg.payload = msg.payload.map(item => {\n    return {\n        \"fecha\": fecha,\n        // Renombramos los atributos de temperatura\n        \"1\": item.outTemp.toFixed(2),\n        \"2\": item.heatindex.toFixed(2),\n        \"3\": item.windchill.toFixed(2),\n        \"4\": item.dewpoint.toFixed(2),\n    };\n});\n\n\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 2580,
-        "y": 1040,
-        "wires": [
-            [
-                "9e052c3395bbb3cf",
-                "156bf21611044f58"
-            ]
-        ]
-    },
-    {
-        "id": "45a61f3560c8f39c",
-        "type": "comment",
-        "z": "61dd6fcac9de88c9",
-        "name": "Grupo Temperatura Backup",
-        "info": "",
-        "x": 2540,
-        "y": 920,
-        "wires": []
-    },
-    {
-        "id": "76f20ea207e6456d",
-        "type": "function",
-        "z": "61dd6fcac9de88c9",
-        "name": "Mapeo template",
-        "func": "// Convertimos la fecha a un formato funcional\n//let fecha = new Date(msg.payload[0].dateTime*1000);\n\nlet fecha = new Date(msg.payload[0].dateTime * 1000).toLocaleString();\n\nmsg.payload = msg.payload.map(item => {\n    return {\n        \"fecha\": fecha,\n        // Renombramos los atributos de temperatura\n        \"Temperatura\": item.outTemp,\n        \"Indice de calor\": item.heatindex,\n        \"Sensacion termica\": item.windchill,\n        \"Punto de rocío\": item.dewpoint,\n    };\n});\n\n\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 2580,
-        "y": 1000,
-        "wires": [
-            [
-                "b76bade4a33e3e9f",
-                "700cedb1227365fa"
-            ]
-        ]
-    },
-    {
-        "id": "700cedb1227365fa",
-        "type": "debug",
-        "z": "61dd6fcac9de88c9",
-        "name": "Gráfico template",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 2820,
-        "y": 1000,
-        "wires": []
-    },
-    {
-        "id": "9e052c3395bbb3cf",
-        "type": "ui-chart",
-        "z": "61dd6fcac9de88c9",
-        "d": true,
-        "group": "37a33cf161b1c1c8",
-        "name": "Grafico temps",
-        "label": "",
-        "order": 3,
-        "chartType": "bar",
-        "category": "[\"1\",\"2\",\"3\",\"4\"]",
-        "categoryType": "json",
-        "xAxisLabel": "",
-        "xAxisProperty": "payload[0].fecha",
-        "xAxisPropertyType": "msg",
-        "xAxisType": "category",
-        "xAxisFormat": "",
-        "xAxisFormatType": "auto",
-        "xmin": "",
-        "xmax": "",
-        "yAxisLabel": "Grados (°C)",
-        "yAxisProperty": "valor",
-        "yAxisPropertyType": "property",
-        "ymin": "0",
-        "ymax": "60",
-        "bins": 10,
-        "action": "replace",
-        "stackSeries": false,
-        "pointShape": "circle",
-        "pointRadius": 4,
-        "showLegend": false,
-        "removeOlder": 1,
-        "removeOlderUnit": "3600",
-        "removeOlderPoints": "",
-        "colors": [
-            "#ff4538",
-            "#ffde38",
-            "#ff4538",
-            "#424fff",
-            "#a347e1",
-            "#d62728",
-            "#ff9896",
-            "#ffde38",
-            "#c5b0d5"
-        ],
-        "textColor": [
-            "#ffffff"
-        ],
-        "textColorDefault": false,
-        "gridColor": [
-            "#414f62"
-        ],
-        "gridColorDefault": false,
-        "width": 7,
-        "height": 4,
-        "className": "",
-        "interpolation": "linear",
-        "x": 2820,
-        "y": 1040,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b76bade4a33e3e9f",
-        "type": "ui-template",
-        "z": "61dd6fcac9de88c9",
-        "d": true,
-        "group": "37a33cf161b1c1c8",
-        "page": "",
-        "ui": "",
-        "name": "UI Temps",
-        "order": 2,
-        "width": 7,
-        "height": "2",
-        "head": "",
-        "format": "<template>\n    <div class=\"contenedor-principal\">\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-azul\">{{ obtenerDato('Temperatura') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Temperatura</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-celeste\">{{ obtenerDato('Indice de calor') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Índice de calor</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-rojo\">{{ obtenerDato('Sensacion termica') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Sensación térmica</div>\n        </div>\n\n        <div class=\"caja-dato\">\n            <div class=\"valor texto-morado\">{{ obtenerDato('Punto de rocío') }}<span class=\"unidad\">°C</span></div>\n            <div class=\"etiqueta\">Punto de rocío</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal {\n        display: flex;\n        justify-content: space-around;\n        /* Reparte el espacio por igual */\n        //background-color: #262636;\n        background-color: #1d1d2a;\n        /* Fondo oscuro */\n        //padding: 10px;\n        border-radius: 10px;\n        font-family: Arial, sans-serif;\n        //border: 1px solid;\n    }\n\n    .caja-dato {\n        display: flex;\n        flex-direction: column;\n        justify-content: center; /* centra verticalmente */\n        align-items: center; /* centra horizontalmente */\n        \n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor {\n        font-size: 24px;\n        font-weight: bold;\n        margin-bottom: 5px;\n        //border: 1px solid;\n    }\n\n    .unidad {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .texto-azul {\n        color: #ff4538;\n    }\n\n    .texto-celeste {\n        color: #ffde38;\n    }\n\n    .texto-rojo {\n        color: #ff4538;\n    }\n\n    .texto-morado {\n        color: #424fff;\n    }\n</style>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 2800,
-        "y": 960,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "4fbf6c3a80f80a1f",
         "type": "ui-chart",
         "z": "61dd6fcac9de88c9",
         "group": "37a33cf161b1c1c8",
         "name": "Gráfico temperaturas",
         "label": "",
-        "order": 4,
+        "order": 2,
         "chartType": "line",
         "category": "[\"Temperatura\", \"Temperatura aparente\", \"Índice de calor\", \"Punto de rocío\"]",
         "categoryType": "json",
@@ -2987,7 +2750,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 660,
+        "x": 680,
         "y": 1120,
         "wires": []
     },
@@ -3040,8 +2803,8 @@
         "links": [
             "ab4c0107d91de31c"
         ],
-        "x": 355,
-        "y": 780,
+        "x": 345,
+        "y": 700,
         "wires": []
     },
     {
@@ -3067,7 +2830,7 @@
         "group": "13e1ab6c7e47cd89",
         "name": "Grafico lluvia 2",
         "label": "",
-        "order": 5,
+        "order": 4,
         "chartType": "bar",
         "category": "",
         "categoryType": "none",
@@ -3136,7 +2899,7 @@
         "width": "0",
         "height": "0",
         "head": "",
-        "format": "<template>\n    <div class=\"contenedor-principal-ll\">\n        <div class=\"caja-dato-ll\">\n            <div class=\"valor-ll color-lluvia-ll\">{{ obtenerDato_1('Tasa_actual') }}<span class=\"unidad-ll\">mm/h</span></div>\n            <div class=\"etiqueta-ll\">Tasa actual</div>\n        </div>\n        <div class=\"caja-dato-2\">\n            <div class=\"valor-2 color-lluvia-2\">{{ obtenerDato_2('ultimas_dos_h') }}<span class=\"unidad-2\">mm</span></div>\n            <div class=\"etiqueta-2\">Últimas 2h</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato_1(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        },\n\n        obtenerDato_2(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[1] && this.msg.payload[1][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[1][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal-ll {\n        display: flex;\n        justify-content: space-around;\n        align-items: flex-start;\n        width: 100%;\n        font-family: Arial, sans-serif;\n        height: 53px;\n        //border: 1px solid;\n    }\n\n    .caja-dato-ll {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;    /* centra horizontalmente */\n        align-items: center;        /* centra verticalmente */\n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor-ll {\n        font-size: 20px;\n        font-weight: bold;\n        margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-ll {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-ll {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .color-lluvia-ll {\n        color: #e1feffff;\n    }\n\n    .caja-dato-2 {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: center;\n        //border: 1px solid;\n    }\n\n     .valor-2 {\n        font-size: 20px;\n        font-weight: bold;\n        margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-2 {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-2 {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n    \n    .color-lluvia-2 {\n        color: #80fbffff;\n    }\n</style>",
+        "format": "<template>\n    <div class=\"contenedor-principal-ll\">\n        <div class=\"caja-dato-ll\">\n            <div class=\"valor-ll color-lluvia-ll\">{{ obtenerDato_1('Tasa_actual') }}<span class=\"unidad-ll\">mm/h</span></div>\n            <div class=\"etiqueta-ll\">Tasa actual</div>\n        </div>\n        <div class=\"caja-dato-2\">\n            <div class=\"valor-2 color-lluvia-2\">{{ obtenerDato_2('ultimas_dos_h') }}<span class=\"unidad-2\">mm</span></div>\n            <div class=\"etiqueta-2\">Últimas 2h</div>\n        </div>\n    </div>\n</template>\n\n<script>\n    export default {\n    methods: {\n        // Esta función busca el dato. Si no hay payload o falta la variable, devuelve '0.0'\n        obtenerDato_1(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[0] && this.msg.payload[0][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[0][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        },\n\n        obtenerDato_2(nombreVariable) {\n            if (this.msg && this.msg.payload && this.msg.payload[1] && this.msg.payload[1][nombreVariable] !== undefined) {\n                let numero = parseFloat(this.msg.payload[1][nombreVariable]);\n                // Redondeamos a 1 decimal para que se vea ordenado (ej: 36.3), si falla pone 0.0\n                return isNaN(numero) ? \"0.0\" : numero.toFixed(1);\n            }\n            return \"0.0\"; // El valor por defecto que pediste\n        }\n    }\n}\n</script>\n\n<style scoped>\n    /* Estilos clásicos y fáciles de entender */\n    .contenedor-principal-ll {\n        display: flex;\n        justify-content: space-around;\n        align-items: flex-start;\n        width: 100%;\n        font-family: Arial, sans-serif;\n        height: 53px;\n        //border: 1px solid;\n    }\n\n    .caja-dato-ll {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;    /* centra horizontalmente */\n        align-items: center;        /* centra verticalmente */\n        text-align: center;\n        margin-right: 2px;\n        margin-left: 2px;\n        //margin-top: 10px;\n        //border: 1px solid;\n    }\n\n    .valor-ll {\n        font-size: 20px;\n        font-weight: bold;\n        //margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-ll {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-ll {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n\n    /* Colores para cada número */\n    .color-lluvia-ll {\n        color: #e1feffff;\n    }\n\n    .caja-dato-2 {\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        align-items: center;\n        //border: 1px solid;\n    }\n\n     .valor-2 {\n        font-size: 20px;\n        font-weight: bold;\n        //margin-bottom: 2px;\n        //border: 1px solid;\n    }\n\n    .unidad-2 {\n        font-size: 13px;\n        color: #c4c4c4;\n        margin-left: 3px;\n        //border: 1px solid;\n    }\n\n    .etiqueta-2 {\n        font-size: 12px;\n        color: #c4c4c4;\n    }\n    \n    .color-lluvia-2 {\n        color: #e1feffff;\n    }\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
@@ -3177,31 +2940,6 @@
         ]
     },
     {
-        "id": "4c7fb26ee27746b6",
-        "type": "ui-text",
-        "z": "61dd6fcac9de88c9",
-        "d": true,
-        "group": "13e1ab6c7e47cd89",
-        "order": 3,
-        "width": 2,
-        "height": 2,
-        "name": "Última lluvia registrada",
-        "label": "Última lluvia",
-        "format": "{{msg.payload}}",
-        "layout": "row-center",
-        "style": true,
-        "font": "Arial,Arial,Helvetica,sans-serif",
-        "fontSize": "14",
-        "color": "#d6d6d6",
-        "wrapText": true,
-        "className": "",
-        "value": "payload[0][\"Ultima lluvia detectada\"]",
-        "valueType": "msg",
-        "x": 2520,
-        "y": 860,
-        "wires": []
-    },
-    {
         "id": "b70285fe5b58c043",
         "type": "link out",
         "z": "61dd6fcac9de88c9",
@@ -3210,8 +2948,8 @@
         "links": [
             "d01bdd4400fac7ed"
         ],
-        "x": 355,
-        "y": 740,
+        "x": 345,
+        "y": 660,
         "wires": []
     },
     {
@@ -3329,7 +3067,6 @@
         "id": "62f8c7a4c744c344",
         "type": "ui-template",
         "z": "61dd6fcac9de88c9",
-        "d": true,
         "group": "0336dace9b8ab47c",
         "page": "",
         "ui": "",
@@ -3338,7 +3075,7 @@
         "width": "4",
         "height": "3",
         "head": "",
-        "format": "<div class=\"cabecera-ET\">\n\n    <div class=\"panel-superior-ET\">\n        Evapotranspiración\n    </div>\n\n    <div class=\"panel-inferior-ET\">\n        <div class=\"caja-izquierda-ET\">\n            <div class=\"valor-1-ET color-1-ET\">10.1<span class=\"unidad-1-ET\">mm/h</span></div>\n            <div class=\"etiqueta-1-ET\">Tasa actual</div>\n        </div>\n        <div class=\"caja-derecha-ET\">\n            <div class=\"valor-2-ET color-2-ET\">20.1<span class=\"unidad-2-ET\">mm</span></div>\n            <div class=\"etiqueta-2-ET\">Últimas 2h</div>\n        </div>\n    </div>\n</div>\n\n<style>\n\n    .cabecera-ET {\n        display: flex;\n        flex-direction: column;\n        border: 1px solid;\n    }\n\n    /* ---------- SUPERIOR ---------- */\n\n    .panel-superior-ET {\n        font-family: Arial;\n        font-size: 20px;\n    }\n\n    /* ---------- INFERIOR ---------- */\n\n\n\n\n\n    .titulo-principal-presion-p {\n        color: white;\n        font-size: 1.25rem;\n    }\n    \n    .panel-tendencia-p {\n        width: 120px;\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        justify-content: center;\n        margin-top: 2px;\n        //border: 1px solid;\n    }\n    .valor-tendencia-p{\n        font-family: sans-serif;\n        display: flex;\n        align-items: baseline;\n        gap: 4px;\n        color: #A9D4FF;\n        font-size: 1.1rem;\n        font-weight: 600;\n        white-space:nowrap;\n        //border: 1px solid;\n    }   \n    .icono-tendencia-p{\n        font-size: 1.1rem;\n        line-height: 1;\n        //border: 1px solid;\n    }\n    .fila-inferior-p{\n        margin-top: 1px;\n        //border: 1px solid;\n    }\n    .texto-tendencia-p{\n        color: #c4c4c4;\n        font-family: sans-serif;\n        font-size: 12px;\n        text-align: center;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n    .unidades-tendencia-p{\n        color: #c4c4c4;\n        font-size: 12px;\n        white-space:nowrap;\n        //border: 1px solid;\n    }\n\n</style>",
+        "format": "<div class=\"cabecera-ET\">\n\n    <div class=\"panel-superior-ET\">\n        Evapotranspiración\n    </div>\n\n    <div class=\"panel-inferior-ET\">\n        <div class=\"caja-izquierda-ET\">\n            <div class=\"valor-1-ET color-1-ET\">{{msg.payload.etUltimaHora}}<span class=\"unidad-1-ET\">mm</span></div>\n            <div class=\"etiqueta-1-ET\">ET Última hora</div>\n        </div>\n        <div class=\"caja-derecha-ET\">\n            <div class=\"valor-2-ET color-2-ET\">{{msg.payload.etHoy}}<span class=\"unidad-2-ET\">mm</span></div>\n            <div class=\"etiqueta-2-ET\">ET Hoy</div>\n        </div>\n    </div>\n</div>\n\n<style>\n\n    .cabecera-ET {\n        display: flex;\n        flex-direction: column;\n        justify-content: flex-end;\n        //border: 1px solid;\n    }\n\n    /* ---------- SUPERIOR ---------- */\n\n    .panel-superior-ET {\n        font-family: Arial;\n        font-size: 1.2rem;\n        //border: 1px solid;\n    }\n\n    /* ---------- INFERIOR ---------- */\n    \n    .panel-inferior-ET {\n        display: flex;\n        flex-direction: row;\n        justify-content: space-around;\n        font-family: Arial;\n        margin-top: 20px;\n        margin-bottom: 17px;\n        //border: 1px solid;\n    }\n\n    /* ---------- CAJAS ---------- */\n    \n    .caja-izquierda-ET,\n    .caja-derecha-ET{\n        display:flex;\n        flex-direction:column;\n        align-items:center;\n    }\n\n    /* ---------- VALOR ---------- */\n    \n    .valor-1-ET,\n    .valor-2-ET{\n        display:flex;\n        align-items:baseline;\n    \n        font-family:Arial;\n        font-size: 18px;\n        font-weight: bold;\n        color: #e1feffff;\n        line-height: 1;\n    }\n\n    /* ---------- UNIDADES ---------- */\n    \n    .unidad-1-ET,\n    .unidad-2-ET{\n        margin-left:4px;\n        font-size:12px;\n        //font-weight:600;\n        color: #C4C4C4;    \n    }\n\n    /* ---------- ETIQUETAS ---------- */\n    \n    .etiqueta-1-ET,\n    .etiqueta-2-ET{\n        margin-top: 5px;\n        font-family: Arial;\n        font-size: 13px;\n        color: #C4C4C4;\n    }\n    //#e1feffff\n\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
@@ -3349,6 +3086,203 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "3eeebeaf1a65fb1a",
+        "type": "function",
+        "z": "61dd6fcac9de88c9",
+        "name": "Consulta",
+        "func": "msg.topic = `\n            SELECT\n                datetime(dateTime, 'unixepoch', 'localtime') AS fecha,\n                rain AS lluvia\n            FROM archive\n            WHERE dateTime >= strftime('%s', 'now', 'start of month', '+5 hours')\n            ORDER BY dateTime ASC;`;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 100,
+        "wires": [
+            [
+                "80fd479a2ec6993d"
+            ]
+        ]
+    },
+    {
+        "id": "eadcd055db27044a",
+        "type": "inject",
+        "z": "61dd6fcac9de88c9",
+        "name": "Test",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "3eeebeaf1a65fb1a"
+            ]
+        ]
+    },
+    {
+        "id": "80fd479a2ec6993d",
+        "type": "sqlite",
+        "z": "61dd6fcac9de88c9",
+        "mydb": "2c70fe4a36266f85",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Database",
+        "x": 440,
+        "y": 100,
+        "wires": [
+            [
+                "3c3306e012ac39d1"
+            ]
+        ]
+    },
+    {
+        "id": "3c3306e012ac39d1",
+        "type": "debug",
+        "z": "61dd6fcac9de88c9",
+        "name": "Consulta DB",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "54b8c247b0fbdcac",
+        "type": "link out",
+        "z": "61dd6fcac9de88c9",
+        "name": "link out 21",
+        "mode": "link",
+        "links": [
+            "fc35a914e622296b"
+        ],
+        "x": 675,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "fc35a914e622296b",
+        "type": "link in",
+        "z": "61dd6fcac9de88c9",
+        "name": "link in 35",
+        "links": [
+            "54b8c247b0fbdcac"
+        ],
+        "x": 995,
+        "y": 1100,
+        "wires": [
+            [
+                "bbe30d13c961b364"
+            ]
+        ]
+    },
+    {
+        "id": "bbe30d13c961b364",
+        "type": "function",
+        "z": "61dd6fcac9de88c9",
+        "name": "Mapeo",
+        "func": "let etUltimaHora = msg.payload[0].etUltimaHora;\nlet etHoy = msg.payload[0].etHoy;\n\nmsg.payload = {\n    etUltimaHora: etUltimaHora.toFixed(2),\n    etHoy: etHoy.toFixed(2)\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 1100,
+        "wires": [
+            [
+                "62f8c7a4c744c344",
+                "f8d62555e093f02e"
+            ]
+        ]
+    },
+    {
+        "id": "b170b2e1b764b12a",
+        "type": "comment",
+        "z": "61dd6fcac9de88c9",
+        "name": "Consulta archivo .JSON",
+        "info": "",
+        "x": 1140,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e1156b2f6bf1ddef",
+        "type": "link in",
+        "z": "61dd6fcac9de88c9",
+        "name": "link in 36",
+        "links": [
+            "07fe6afcac032256"
+        ],
+        "x": 1055,
+        "y": 220,
+        "wires": [
+            [
+                "01dc941a7d275043"
+            ]
+        ]
+    },
+    {
+        "id": "091d1972bd652729",
+        "type": "link in",
+        "z": "61dd6fcac9de88c9",
+        "name": "link in 37",
+        "links": [
+            "db2b04db7abd8217"
+        ],
+        "x": 405,
+        "y": 660,
+        "wires": [
+            [
+                "f1204ec42953a182"
+            ]
+        ]
+    },
+    {
+        "id": "601b482c33fa4607",
+        "type": "link in",
+        "z": "61dd6fcac9de88c9",
+        "name": "link in 38",
+        "links": [
+            "db2b04db7abd8217"
+        ],
+        "x": 405,
+        "y": 700,
+        "wires": [
+            [
+                "fb45a3ab745fb84b"
+            ]
+        ]
+    },
+    {
+        "id": "ca5b093cfddd3435",
+        "type": "debug",
+        "z": "61dd6fcac9de88c9",
+        "name": "Luna",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 1600,
+        "wires": []
     },
     {
         "id": "c905ff3c44bdaaf1",
