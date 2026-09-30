@@ -5715,7 +5715,6 @@
         "y": 140,
         "wires": [
             [
-                "9b9417a544da347c",
                 "be3af80f9cc69387"
             ]
         ]
@@ -5771,33 +5770,6 @@
                 "f2cee3a88b4a5217",
                 "bbb9fe75a67b5745"
             ]
-        ]
-    },
-    {
-        "id": "9b9417a544da347c",
-        "type": "ui-table",
-        "z": "b0d7787666ab6666",
-        "group": "b9b82824216c1537",
-        "name": "",
-        "label": "",
-        "order": 6,
-        "width": 0,
-        "height": 0,
-        "maxrows": 0,
-        "passthru": false,
-        "autocols": true,
-        "showSearch": false,
-        "deselect": true,
-        "selectionType": "none",
-        "columns": [],
-        "mobileBreakpoint": "sm",
-        "mobileBreakpointType": "defaults",
-        "action": "replace",
-        "className": "",
-        "x": 850,
-        "y": 180,
-        "wires": [
-            []
         ]
     },
     {
@@ -5861,8 +5833,7 @@
         "y": 320,
         "wires": [
             [
-                "d8fc4fa15ca5a902",
-                "9b9417a544da347c"
+                "d8fc4fa15ca5a902"
             ]
         ]
     },
@@ -5988,6 +5959,7 @@
         "id": "81f1253dbdf0e56f",
         "type": "ui-template",
         "z": "b0d7787666ab6666",
+        "d": true,
         "group": "b9b82824216c1537",
         "page": "",
         "ui": "",
